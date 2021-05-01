@@ -1,0 +1,29 @@
+.aboutPage {
+  padding: 16px;
+  background-color: #FFF;
+
+  .logo {
+    width: 50%;
+    margin: 25px auto 25px;
+    clear: both;
+    display: block;
+  }
+
+  .appName {
+    font-size: 2em;
+    display: block;
+    text-align: center;
+  }
+
+  .appVersion {
+    font-size: 1.5em;
+    display: block;
+    text-align: center;
+  }
+
+  .authorName {
+    font-size: 1.5em;
+    display: block;
+    text-align: center;
+  }
+}

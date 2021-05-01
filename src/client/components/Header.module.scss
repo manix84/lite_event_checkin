@@ -1,0 +1,19 @@
+body {
+  padding-top: 32px;
+}
+
+.header {
+  padding: 4px;
+  height: 24px;
+  background-color: #FFF;
+  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  a,
+  .logo {
+    height: inherit;
+  }
+}

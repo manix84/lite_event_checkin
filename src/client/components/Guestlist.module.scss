@@ -1,0 +1,43 @@
+.guestlist {
+  overflow: scroll;
+  font-size: 22px;
+
+  table {
+    width: 100%;
+    table-layout: auto;
+
+    td,
+    th {
+      text-align: start;
+    }
+
+    tbody {
+      tr:nth-child(even) {
+        background: #DDD
+      }
+
+      tr:nth-child(odd) {
+        background: #EEE
+      }
+    }
+
+
+    img {
+      height: 1em;
+      opacity: 1;
+    }
+
+    a:link,
+    a:active,
+    a:visited {
+      text-decoration: none;
+      color: rgba(0, 0, 0, 1)
+    }
+
+    .checkedIn {
+      color: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  @import '../utils/loader.module.scss';
+}

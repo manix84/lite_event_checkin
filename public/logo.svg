@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+  <defs>
+    <linearGradient id="a" x1="309.898" x2="309.898" y1="49.906" y2="631.063" gradientUnits="userSpaceOnUse">
+      <stop offset="0"/>
+      <stop offset="1" stop-color="#d3d3d3"/>
+    </linearGradient>
+  </defs>
+  <path fill="#fbb310" stroke="url(#a)" stroke-linecap="round" stroke-width="2" d="M300.218 476.958c-26.04 0-47.6-10.57-64.68-31.71-17.08-21.14-25.62-48.79-25.62-82.95 0-34.16 5.88-65.31 17.64-93.45 11.76-28.14 28.56-51.03 50.4-68.67s45.15-26.46 69.93-26.46c24.78 0 44.8 5.6 60.06 16.8 15.26 11.2 22.89 24.57 22.89 40.11s-4.62 28.77-13.86 39.69c-8.96 0-19.04-1.96-30.24-5.88s-19.6-8.68-25.2-14.28l7.98-42.42c-6.72-4.2-15.54-6.3-26.46-6.3-17.08 0-32.2 14.63-45.36 43.89-13.16 29.26-19.74 65.31-19.74 108.15 0 28.28 4.69 48.79 14.07 61.53 9.38 12.74 20.79 19.11 34.23 19.11 22.12 0 43.4-10.36 63.84-31.08l17.22 15.54c-3.08 4.48-8.68 10.64-16.8 18.48-8.12 7.84-16.1 14.35-23.94 19.53-7.84 5.18-17.78 9.87-29.82 14.07-12.04 4.2-24.22 6.3-36.54 6.3z" alignment-baseline="before-edge" paint-order="fill" style="line-height:350px;text-transform:uppercase;white-space:pre"/>
+  <g transform="translate(-1 -1)">
+    <path fill="#e75d20" stroke="#000" stroke-opacity=".5" d="M2 272h43.44V45.44H272V2H2v270z"/>
+    <path fill="#89c33e" stroke="#000" stroke-opacity=".5" d="M370 2v43.44h226.56V272H640V2H370z"/>
+    <path fill="#44c4e7" stroke="#000" stroke-opacity=".5" d="M640 370h-43.44v226.56H370V640h270V370z"/>
+    <path fill="#e7dd20" stroke="#000" stroke-opacity=".5" d="M272 640v-43.44H45.44V370H2v270h270z" paint-order="fill"/>
+  </g>
+</svg>

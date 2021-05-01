@@ -1,0 +1,141 @@
+.scannerPage {
+  .scanner {
+    background-color: #FFF;
+    padding: 16px;
+    position: relative;
+    width: auto;
+    height: auto;
+
+    .overlay {
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: 16px;
+      // background-color: rgba(#000, 0.1);
+      backdrop-filter: grayscale(0.75) blur(10px);
+      background-blend-mode: multiply;
+
+      -webkit-clip-path: polygon(0% 0%, 0% 100%, 10% 100%, 10% 10%, 90% 10%, 90% 90%, 10% 90%, 10% 100%, 100% 100%, 100% 0%);
+      clip-path: polygon(0% 0%, 0% 100%, 10% 100%, 10% 10%, 90% 10%, 90% 90%, 10% 90%, 10% 100%, 100% 100%, 100% 0%);
+    }
+
+    .inlay {
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: calc(12px + 10%);
+      // outline: 4px dashed rgba(255, 255, 255, 0.75);
+      z-index: 3;
+
+
+      .b1 {
+        top: 16px;
+        left: 16px;
+        border-top: 8px solid;
+        border-left: 8px solid;
+      }
+
+      .b2 {
+        top: 16px;
+        right: 16px;
+        border-top: 8px solid;
+        border-right: 8px solid;
+      }
+
+      .b3 {
+        bottom: 16px;
+        left: 16px;
+        border-bottom: 8px solid;
+        border-left: 8px solid;
+      }
+
+      .b4 {
+        bottom: 16px;
+        right: 16px;
+        border-bottom: 8px solid;
+        border-right: 8px solid;
+      }
+
+      .b {
+        height: 33%;
+        width: 33%;
+        position: absolute;
+        z-index: 4;
+        border-color: rgba(255, 255, 255, 0.75);
+      }
+
+      .inlayIcon {
+        display: none;
+        margin: 64px;
+      }
+    }
+
+    &.valid {
+      .inlay {
+        outline-color: rgba(0, 255, 0, 0.75);
+
+        .b {
+          border-color: rgba(0, 255, 0, 0.75);
+        }
+
+        .inlayIcon {
+          display: block;
+        }
+      }
+    }
+
+    &.invalid {
+      .inlay {
+        outline-color: rgba(255, 0, 0, 0.75);
+
+        .b {
+          border-color: rgba(255, 0, 0, 0.75);
+        }
+
+        .inlayIcon {
+          display: block;
+        }
+      }
+    }
+
+    &.unknown {
+      .inlay {
+        outline-color: rgba(0, 150, 255, 0.75);
+
+        .b {
+          border-color: rgba(0, 150, 255, 0.75);
+        }
+
+        .inlayIcon {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .results {
+    background-color: #FFF;
+    margin-top: 8px;
+    padding: 16px;
+    line-height: 1.2em;
+    height: 1.2em;
+    font-size: 1.2em;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .guestlist {
+    background-color: #FFF;
+    margin-top: 8px;
+    padding: 16px;
+  }
+}
