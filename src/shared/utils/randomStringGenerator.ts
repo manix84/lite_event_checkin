@@ -1,12 +1,19 @@
 const randomStringGenerator = (length: number = 24) => {
-  var result = [];
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!()-.?[]_#~;:@#$%^&*+=';
-  var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result.push(characters.charAt(Math.floor(Math.random() *
-charactersLength)));
+  const result = [];
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+    'abcdefghijklmnopqrstuvwxyz' +
+    '0123456789!() -.? []_#~;: @#$%^&*+=';
+  for (let i = 0; i < length; i++) {
+    result.push(
+      chars.charAt(
+        Math.floor(
+          Math.random() * chars.length
+        )
+      )
+    );
   }
   return result.join('');
-}
+};
 
 export default randomStringGenerator;
