@@ -55,7 +55,8 @@
     "web-vitals": "^1.1.1"
   },
   "scripts": {
-    "start": "concurrently \"npm:start:server\" \"npm:start:client\" ",
+    "start": "run-s start:client build",
+    "start:devServer": "concurrently \"npm:start:server\" \"npm:start:client\" ",
     "start:server": "node src/server/index.js",
     "start:client": "react-scripts start",
     "build": "react-scripts build",
