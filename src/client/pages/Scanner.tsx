@@ -11,12 +11,6 @@ import failureSound from "../content/failure.mp3";
 const PAUSE_TIMER: number = 2000;
 const DEFAULT_RESULT: string = '[scanning]';
 
-interface GuestProps {
-  firstName: string;
-  lastName: string;
-  salt: string;
-  checkedIn: boolean;
-}
 type ReasonKeys = "GUEST_NOT_FOUND" | "GUEST_ALREADY_CHECKEDIN" | "UNKNOWN_QR_CODE";
 interface CheckinResponse {
   success: boolean;
@@ -28,7 +22,7 @@ interface CheckinResponse {
   };
 }
 
-type Status = "valid" | "invalid" | "validating" | "unknown" | "scanning";
+type Status = "scanning" | "validating" | "valid" | "invalid" | "unknown";
 
 interface ScannerPageState {
   result: string;

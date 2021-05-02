@@ -1,11 +1,8 @@
 import React from 'react';
 import st from './Ticket.module.scss';
-import { sha256 } from 'js-sha256';
 import QRGenerator from '../components/QRCode';
 import cn from 'classnames';
 import Loading from '../components/Loading';
-
-const SERVER_SALT: string = process.env.REACT_APP_SALT || '';
 
 interface GuestProps {
   firstName: string;
