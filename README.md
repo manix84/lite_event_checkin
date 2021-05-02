@@ -21,6 +21,7 @@ A simple QR Code check-in system.
 - [x] AddGuest page to manually add guests (`/addGuest` - may remove after CSV import is working).
 - [ ] Login to cover Scanner & Guestlist pages.
   - [ ] Leave guest ticket page unlocked.
-- [ ] Move to context for storing Guestlist across pages.
+- [x] <del>Move to context for storing Guestlist across pages.</del>
+  - [ ] Move from context to websockets to update guest data.
 - [x] Implement About Page, so it looks a little more professional.
 - [x] Add some styling so it doesn't look like a developer through this together in a week.
