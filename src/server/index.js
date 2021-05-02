@@ -1,34 +1,47 @@
-import express from 'express';
-import Database from './utils/Database';
-import rdmString from '../shared/utils/randomStringGenerator';
-import { sha256 } from 'js-sha256';
-import dotenv from 'dotenv-flow';
+const express = require('express');
+const Database = require('./utils/Database');
+const rdmString = require('./utils/randomStringGenerator');
+const { sha256 } = require('js-sha256');
+const dotenv = require('dotenv-flow');
 
 dotenv.config();
 
 const GuestList = new Database('../guests.json', __dirname);
-const SERVER_SALT: string = process.env.REACT_APP_SALT || '';
+const SERVER_SALT = process.env.REACT_APP_SALT || '';
 
 console.log(`SERVER_SALT: ${SERVER_SALT}`);
 
-const app = express();
 const port = process.env.PORT || 5000;
+const app = express();
+require('express-ws')(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(function (req, _res, next) {
+  console.log('middleware');
+  req.testing = 'testing';
+  return next();
+});
 
-app.get('/api/collectGuests', (req: any, res: any) => {
+app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
   console.log(`collectGuests: ${guestlist}`);
   res.send(guestlist);
 });
 
-app.get('/api/collectGuest/:ticketID', (req: any, res: any) => {
+app.get('/api/collectGuest/:ticketID', (req, res) => {
   const guest = GuestList.get(req.params.ticketID);
   res.send(guest);
 });
 
-app.post('/api/checkinGuest', (req: any, res: any) => {
+app.ws('/api/test', function(ws, req) {
+  ws.on('message', function(msg) {
+    console.log(msg);
+  });
+  console.log('socket', req.testing);
+});
+
+app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
   console.log(`GuestHash: ${guestHash}`);
   const currentGuestObj = GuestList.get(guestHash);
@@ -61,11 +74,11 @@ app.post('/api/checkinGuest', (req: any, res: any) => {
   }
 });
 
-// app.post('/api/importGuests', (req: any, res: any) => {
+// app.post('/api/importGuests', (req, res) => {
 
 // })
 
-app.post('/api/addGuest', (req: any, res: any) => {
+app.post('/api/addGuest', (req, res) => {
   const salt = rdmString();
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
