@@ -5,6 +5,10 @@ interface GuestlistProps {
   includeQRLink?: boolean;
 }
 
+interface GuestsProps {
+  [guestHash: string]: GuestProps;
+};
+
 interface GuestProps {
   firstName: string;
   lastName: string;
@@ -14,7 +18,7 @@ interface GuestProps {
 
 interface GuestlistState {
   loading: boolean;
-  guests: { [guestHash: string]: GuestProps; };
+  guests: GuestsProps;
 }
 
 const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {

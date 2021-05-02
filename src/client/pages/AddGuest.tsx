@@ -39,7 +39,7 @@ class AddGuestPage extends React.Component {
             Last Name:
             <input name={'lastName'} placeholder={'Last Name'} />
           </label>
-          <input type={'submit'} value={'Add Guest'} />
+          <input type={'submit'} value={'Add Guest'} className={st.submitButton} />
         </form>
       </div>
     );
