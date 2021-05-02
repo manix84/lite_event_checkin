@@ -3,6 +3,7 @@ import Guestlist from "../components/Guestlist";
 import QrReader from "react-qr-reader";
 import st from "./Scanner.module.scss";
 import cn from "classnames";
+import GuestContext from '../context/Guests';
 
 import successSound from "../content/success.mp3";
 import failureSound from "../content/failure.mp3";
@@ -20,7 +21,11 @@ type ReasonKeys = "GUEST_NOT_FOUND" | "GUEST_ALREADY_CHECKEDIN" | "UNKNOWN_QR_CO
 interface CheckinResponse {
   success: boolean;
   reason?: ReasonKeys;
-  guest?: GuestProps;
+  guest?: {
+    hash: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
 type Status = "valid" | "invalid" | "validating" | "unknown" | "scanning";
@@ -38,6 +43,7 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   };
 
   pauseScan: boolean = false;
+  updateGuest: Function = () => { };
 
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
@@ -45,6 +51,8 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   componentDidMount() {
     this.successAudio.volume = 0.2;
     this.failureAudio.volume = 0.2;
+
+    this.updateGuest = this.context.updateGuest;
   }
 
   getReasonString(reasonKey?: ReasonKeys) {
@@ -107,7 +115,13 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
         result: `${bodyJson.guest?.firstName} ${bodyJson.guest?.lastName}`,
         status: "valid"
       });
+
+      this.updateGuest(bodyJson.guest?.hash, {
+        checkedIn: true
+      });
+
       this.successAudio.play();
+
       setTimeout(() => {
         this.setState({
           result: DEFAULT_RESULT,
@@ -183,5 +197,6 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
     );
   }
 }
+ScannerPage.contextType = GuestContext;
 
 export default ScannerPage;

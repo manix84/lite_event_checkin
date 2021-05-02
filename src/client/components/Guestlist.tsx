@@ -1,11 +1,13 @@
 import React from 'react';
+import GuestsContext from '../context/Guests';
 import st from './Guestlist.module.scss';
 
-interface GuestlistProps {
+
+interface GuestlistCompProps {
   includeQRLink?: boolean;
 }
 
-interface GuestsProps {
+interface GuestlistProps {
   [guestHash: string]: GuestProps;
 };
 
@@ -17,8 +19,7 @@ interface GuestProps {
 }
 
 interface GuestlistState {
-  loading: boolean;
-  guests: GuestsProps;
+  guests: GuestlistProps;
 }
 
 const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
@@ -32,82 +33,63 @@ const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
   };
 };
 
-class Guestlist extends React.Component<GuestlistProps, GuestlistState> {
+class Guestlist extends React.Component<GuestlistCompProps, GuestlistState> {
   state = {
-    loading: true,
-    guests: {
-      'tmp': {
-        firstName: 'a',
-        lastName: 'b',
-        salt: 'c',
-        checkedIn: false
-      }
-    }
+    guests: {}
   };
 
   componentDidMount() {
-    this.collectGuests()
-      .then(res => this.setState({ guests: res, loading: false }))
-      .catch(err => console.log(err));
+    this.setState({
+      guests: this.context.guests
+    });
   }
-
-  collectGuests = async () => {
-    const response = await fetch('/api/collectGuests');
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  };
 
   render() {
     return (
       <div className={st.guestlist}>
-        {this.state.loading ?
-          <div className={st.loader}></div>
-          :
-          <table>
-            <colgroup>
-              <col />
-              <col />
-            </colgroup>
-            <thead>
+        <table>
+          <colgroup>
+            <col />
+            <col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          {(Object.keys(this.state.guests).length > 20) &&
+            <tfoot>
               <tr>
                 <th></th>
                 <th>Name</th>
               </tr>
-            </thead>
-            {(Object.keys(this.state.guests).length > 20) &&
-              <tfoot>
-                <tr>
-                  <th></th>
-                  <th>Name</th>
-                </tr>
-              </tfoot>
-            }
-            <tbody>
-              {/* {Object.keys(this.state.guests).map((guestHash) => { */}
-              {Object.entries(this.state.guests).sort(sortBy('lastName')).map(([guestHash, guest]) => (
-                <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>
-                  <td>
-                    <img className={st.statusIcon} src={guest.checkedIn ? `${process.env.PUBLIC_URL}/checkMark.svg` : `${process.env.PUBLIC_URL}/crossMark.svg`} alt={guest.checkedIn ? 'Checked In!' : 'Not Checked In Yet'} />
-                  </td>
-                  <td className={st.name}>
-                    {this.props.includeQRLink ?
-                      <a href={`/ticket/${guestHash}`}>
-                        {`${guest.lastName}, ${guest.firstName}`}
-                      </a> :
-                      <>{`${guest.lastName}, ${guest.firstName}`}</>
-                    }
-                  </td>
-                </tr>
-              )
-              )}
-            </tbody>
-          </table>
-        }
+            </tfoot>
+          }
+          <tbody>
+            {/* {Object.keys(this.state.guests).map((guestHash) => { */}
+            {Object.entries(this.state.guests as GuestlistProps).sort(sortBy('lastName')).map(([guestHash, guest]) => (
+              <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>
+                <td>
+                  <img className={st.statusIcon} src={guest.checkedIn ? `${process.env.PUBLIC_URL}/checkMark.svg` : `${process.env.PUBLIC_URL}/crossMark.svg`} alt={guest.checkedIn ? 'Checked In!' : 'Not Checked In Yet'} />
+                </td>
+                <td className={st.name}>
+                  {this.props.includeQRLink ?
+                    <a href={`/ticket/${guestHash}`}>
+                      {`${guest.lastName}, ${guest.firstName}`}
+                    </a> :
+                    <>{`${guest.lastName}, ${guest.firstName}`}</>
+                  }
+                </td>
+              </tr>
+            )
+            )}
+          </tbody>
+        </table>
       </div>
     );
   }
 }
+Guestlist.contextType = GuestsContext;
 
 export default Guestlist;

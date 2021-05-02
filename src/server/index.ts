@@ -50,6 +50,7 @@ app.post('/api/checkinGuest', (req: any, res: any) => {
     res.send({
       success: true,
       guest: {
+        hash: guestHash,
         firstName: updatedGuestObj.firstName,
         lastName: updatedGuestObj.lastName
       }
