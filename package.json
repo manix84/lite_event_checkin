@@ -37,6 +37,7 @@
   "dependencies": {
     "classnames": "^2.3.1",
     "concurrently": "^6.0.2",
+    "cors": "^2.8.5",
     "dotenv-flow": "^3.2.0",
     "express": "^4.17.1",
     "express-history-api-fallback": "^2.2.1",
@@ -56,10 +57,9 @@
     "web-vitals": "^1.1.1"
   },
   "scripts": {
-    "start": "run-s start:client build",
-    "start:devServer": "concurrently \"npm:start:server\" \"npm:start:client\" ",
+    "start": "run-s build start:server",
     "start:server": "node src/server/index.js",
-    "start:client": "react-scripts start",
+    "start:devServer": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

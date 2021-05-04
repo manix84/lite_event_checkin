@@ -39,12 +39,12 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   };
 
   guestsWS = new WebSocket(
-    `ws://localhost:5000/ws-api/collectGuest/${this.props.match.params.ticketID}`
+    `ws://localhost:${process.env.PORT || 5000}/ws-api/collectGuest/${this.props.match.params.ticketID}`
   );
 
   collectGuestData = async () => {
     const response = await fetch(
-      `/api/collectGuest/${this.props.match.params.ticketID}`
+      `http://localhost:${process.env.PORT || 5000}/api/collectGuest/${this.props.match.params.ticketID}`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);

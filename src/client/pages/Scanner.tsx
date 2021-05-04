@@ -46,11 +46,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
 
-  guestsWS = new WebSocket('ws://localhost:5000/ws-api/collectGuests');
+  guestsWS = new WebSocket(`ws://localhost:${process.env.PORT || 5000}/ws-api/collectGuests`);
 
   collectGuestData = async () => {
     const response = await fetch(
-      `/api/collectGuests`
+      `http://localhost:${process.env.PORT || 5000}/api/collectGuests`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
