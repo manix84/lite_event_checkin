@@ -1,8 +1,9 @@
 import React from 'react';
-import st from './Ticket.module.scss';
 import QRGenerator from '../components/QRCode';
-import cn from 'classnames';
 import Loading from '../components/Loading';
+import { GuestlistProps } from '../types';
+import st from './Ticket.module.scss';
+import cn from 'classnames';
 
 interface GuestProps {
   firstName: string;
@@ -37,8 +38,14 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
     }
   };
 
+  guestsWS = new WebSocket(
+    `ws://localhost:5000/ws-api/collectGuest/${this.props.match.params.ticketID}`
+  );
+
   collectGuestData = async () => {
-    const response = await fetch(`/api/collectGuest/${this.props.match.params.ticketID}`);
+    const response = await fetch(
+      `/api/collectGuest/${this.props.match.params.ticketID}`
+    );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
 
@@ -46,6 +53,7 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   };
 
   componentDidMount() {
+    const guestHash = this.props.match.params.ticketID;
     this.collectGuestData()
       .then(res => {
         if (res) {
@@ -54,7 +62,7 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
             loading: false,
             guestFound: true,
             guestData: res,
-            guestHash: this.props.match.params.ticketID
+            guestHash: guestHash
           });
         } else {
           this.setState({
@@ -64,6 +72,18 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
         }
       })
       .catch(err => console.log(err));
+    this.guestsWS.addEventListener("message", (evt: MessageEvent) => {
+      const data: { guestsPartial: GuestlistProps; } = JSON.parse(evt.data);
+      console.log('data:', data);
+      const guestsPartial: GuestlistProps = data.guestsPartial;
+      console.log('guests:', guestsPartial);
+      if (guestsPartial && guestHash in guestsPartial) {
+        this.setState({
+          guestData: guestsPartial[guestHash],
+          guestHash: guestHash
+        });
+      }
+    });
   }
 
   render() {

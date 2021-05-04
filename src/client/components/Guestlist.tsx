@@ -1,24 +1,13 @@
 import React from 'react';
-import GuestsContext from '../context/Guests';
 import st from './Guestlist.module.scss';
-
+import { GuestlistProps, GuestProps } from '../types';
 
 interface GuestlistCompProps {
+  guests: GuestlistProps;
   includeQRLink?: boolean;
 }
 
-interface GuestlistProps {
-  [guestHash: string]: GuestProps;
-};
-
-interface GuestProps {
-  firstName: string;
-  lastName: string;
-  salt: string;
-  checkedIn: boolean;
-}
-
-interface GuestlistState {
+interface GuestlistCompState {
   guests: GuestlistProps;
 }
 
@@ -33,17 +22,7 @@ const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
   };
 };
 
-class Guestlist extends React.Component<GuestlistCompProps, GuestlistState> {
-  state = {
-    guests: {}
-  };
-
-  componentDidMount() {
-    this.setState({
-      guests: this.context.guests
-    });
-  }
-
+class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> {
   render() {
     return (
       <div className={st.guestlist}>
@@ -58,7 +37,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistState> {
               <th>Name</th>
             </tr>
           </thead>
-          {(Object.keys(this.state.guests).length > 20) &&
+          {(Object.keys(this.props.guests).length > 20) &&
             <tfoot>
               <tr>
                 <th></th>
@@ -67,8 +46,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistState> {
             </tfoot>
           }
           <tbody>
-            {/* {Object.keys(this.state.guests).map((guestHash) => { */}
-            {Object.entries(this.state.guests as GuestlistProps).sort(sortBy('lastName')).map(([guestHash, guest]) => (
+            {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('lastName')).map(([guestHash, guest]) => (
               <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>
                 <td>
                   <img className={st.statusIcon} src={guest.checkedIn ? `${process.env.PUBLIC_URL}/checkMark.svg` : `${process.env.PUBLIC_URL}/crossMark.svg`} alt={guest.checkedIn ? 'Checked In!' : 'Not Checked In Yet'} />
@@ -90,6 +68,5 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistState> {
     );
   }
 }
-Guestlist.contextType = GuestsContext;
 
 export default Guestlist;

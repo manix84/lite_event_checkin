@@ -3,10 +3,11 @@ import Guestlist from "../components/Guestlist";
 import QrReader from "react-qr-reader";
 import st from "./Scanner.module.scss";
 import cn from "classnames";
-import GuestContext from '../context/Guests';
+import { GuestlistProps } from '../types';
 
 import successSound from "../content/success.mp3";
 import failureSound from "../content/failure.mp3";
+import Loading from '../components/Loading';
 
 const PAUSE_TIMER: number = 2000;
 const DEFAULT_RESULT: string = '[scanning]';
@@ -28,25 +29,57 @@ interface ScannerPageState {
   result: string;
   status: Status;
   unknownQR: boolean;
+  guests: GuestlistProps;
+  loadingGuests: boolean;
 }
 class ScannerPage extends React.Component<{}, ScannerPageState> {
   state = {
     result: DEFAULT_RESULT,
     status: ("scanning" as Status),
-    unknownQR: false
+    unknownQR: false,
+    guests: {},
+    loadingGuests: true
   };
 
   pauseScan: boolean = false;
-  updateGuest: Function = () => { };
 
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
+
+  guestsWS = new WebSocket('ws://localhost:5000/ws-api/collectGuests');
+
+  collectGuestData = async () => {
+    const response = await fetch(
+      `/api/collectGuests`
+    );
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+
+    return body;
+  };
 
   componentDidMount() {
     this.successAudio.volume = 0.2;
     this.failureAudio.volume = 0.2;
 
-    this.updateGuest = this.context.updateGuest;
+    this.collectGuestData()
+      .then(res => {
+        console.log('res', res);
+        this.setState({
+          loadingGuests: false,
+          guests: res
+        });
+      })
+      .catch(err => console.log(err));
+    this.guestsWS.addEventListener("message", (evt: MessageEvent) => {
+      const data: { guestsPartial: GuestlistProps; } = JSON.parse(evt.data);
+      const guestsPartial: GuestlistProps = data.guestsPartial;
+      console.log('guests:', guestsPartial);
+      this.setState(state => {
+        Object.assign(state.guests, guestsPartial);
+        return state;
+      });
+    });
   }
 
   getReasonString(reasonKey?: ReasonKeys) {
@@ -108,10 +141,6 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
       this.setState({
         result: `${bodyJson.guest?.firstName} ${bodyJson.guest?.lastName}`,
         status: "valid"
-      });
-
-      this.updateGuest(bodyJson.guest?.hash, {
-        checkedIn: true
       });
 
       this.successAudio.play();
@@ -185,12 +214,13 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
           <div>{this.state.result}</div>
         </div>
         <div className={st.guestlist}>
-          <Guestlist />
+          {(this.state.loadingGuests) ? <Loading /> :
+            <Guestlist guests={this.state.guests} />
+          }
         </div>
       </div>
     );
   }
 }
-ScannerPage.contextType = GuestContext;
 
 export default ScannerPage;

@@ -3,6 +3,7 @@ const Database = require('./utils/Database');
 const rdmString = require('./utils/randomStringGenerator');
 const { sha256 } = require('js-sha256');
 const dotenv = require('dotenv-flow');
+const events = require('events');
 
 dotenv.config();
 
@@ -13,32 +14,53 @@ console.log(`SERVER_SALT: ${SERVER_SALT}`);
 
 const port = process.env.PORT || 5000;
 const app = express();
-require('express-ws')(app);
+const expressWs = require('express-ws')(app);
+const event = new events.EventEmitter();
+const wss = expressWs.getWss();
+
+wss.on('connection', (ws) => {
+  console.log('WSS Connection Open')
+})
+wss.on('close', () => {
+  console.log('WSS Connection closed.')
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(function (req, _res, next) {
-  console.log('middleware');
-  req.testing = 'testing';
-  return next();
+
+app.ws('/ws-api/collectGuests', function (ws, req) {
+
+  event.on("guestUpdated", (guestHash) => {
+    const guestData = {};
+    guestData[guestHash] = GuestList.get(guestHash);
+    if (ws.readyState === 1) {
+      ws.send(JSON.stringify({
+        guestsPartial: guestData
+      }));
+    }
+  });
+});
+
+app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
+  event.on("guestUpdated", (guestHash) => {
+    const guestData = {};
+    guestData[guestHash] = GuestList.get(guestHash);
+    if ((ws.readyState === 1) && req.params.ticketID === guestHash) {
+      ws.send(JSON.stringify({
+        guestsPartial: guestData
+      }));
+    }
+  });
 });
 
 app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
-  console.log(`collectGuests: ${guestlist}`);
   res.send(guestlist);
 });
 
 app.get('/api/collectGuest/:ticketID', (req, res) => {
   const guest = GuestList.get(req.params.ticketID);
   res.send(guest);
-});
-
-app.ws('/api/test', function(ws, req) {
-  ws.on('message', function(msg) {
-    console.log(msg);
-  });
-  console.log('socket', req.testing);
 });
 
 app.post('/api/checkinGuest', (req, res) => {
@@ -68,9 +90,7 @@ app.post('/api/checkinGuest', (req, res) => {
         lastName: updatedGuestObj.lastName
       }
     });
-    console.log({
-      guest: updatedGuestObj
-    });
+    event.emit("guestUpdated", guestHash)
   }
 });
 
