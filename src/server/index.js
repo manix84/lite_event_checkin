@@ -57,14 +57,23 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
   });
 });
 
-if (process.env.NODE_ENV === 'production') {
+// if (process.env.NODE_ENV === 'production') {
   const buildRoot = path.join(__dirname, '..', '..', 'build')
-  app.use(express.static(buildRoot));
 
-  app.get('/', function (req, res) {
+  app.use(express.static(buildRoot))
+    .get('/', function (req, res) {
+      res.sendFile(path.join(buildRoot, 'index.html'));
+    })
+    .get('/scanner', function (req, res) {
+    res.sendFile(path.join(buildRoot, 'index.html'));
+    })
+    .get('/guestlist', function (req, res) {
+    res.sendFile(path.join(buildRoot, 'index.html'));
+    })
+    .get('/ticket/:ticketID', function (req, res) {
     res.sendFile(path.join(buildRoot, 'index.html'));
   });
-}
+// }
 
 app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
