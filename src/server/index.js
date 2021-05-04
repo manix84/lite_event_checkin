@@ -1,9 +1,11 @@
 const express = require('express');
-const Database = require('./utils/Database');
-const rdmString = require('./utils/randomStringGenerator');
+const cors = require('cors')
 const { sha256 } = require('js-sha256');
 const dotenv = require('dotenv-flow');
 const events = require('events');
+
+const Database = require('./utils/Database');
+const rdmString = require('./utils/randomStringGenerator');
 
 dotenv.config();
 
@@ -18,15 +20,16 @@ const expressWs = require('express-ws')(app);
 const event = new events.EventEmitter();
 const wss = expressWs.getWss();
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 wss.on('connection', (ws) => {
   console.log('WSS Connection Open')
 })
 wss.on('close', () => {
   console.log('WSS Connection closed.')
 });
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.ws('/ws-api/collectGuests', function (ws, req) {
 
