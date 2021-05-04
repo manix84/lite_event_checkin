@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors')
 const { sha256 } = require('js-sha256');
 const dotenv = require('dotenv-flow');
@@ -55,6 +56,15 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
     }
   });
 });
+
+if (process.env.NODE_ENV === 'production') {
+  const buildRoot = path.join(__dirname, '..', '..', 'build')
+  app.use(express.static(buildRoot));
+
+  app.get('/', function (req, res) {
+    res.sendFile(path.join(buildRoot, 'index.html'));
+  });
+}
 
 app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
