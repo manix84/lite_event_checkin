@@ -26,7 +26,7 @@ interface TicketPageState {
   guestData: GuestProps;
 }
 
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.PORT || 5000}`;
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.REACT_APP_API_PORT || 5000}`;
 
 class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   state = {
