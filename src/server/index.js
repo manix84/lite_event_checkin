@@ -9,18 +9,20 @@ const https = require('https');
 
 const Database = require('./utils/Database');
 const rdmString = require('./utils/randomStringGenerator');
+const { debug, info } = require('./utils/log');
 
 dotenv.config();
 
 const GuestList = new Database('../guests.json', __dirname);
 const SERVER_SALT = process.env.REACT_APP_SALT || '';
 
-console.log(`SERVER_SALT: ${SERVER_SALT}`);
+debug(`SERVER_SALT: ${SERVER_SALT}`);
 
 const port = process.env.PORT || 5000;
 const app = express();
 let expressWs;
 let httpsServer = app;
+
 if (process.env.NODE_ENV !== 'production') {
   httpsServer = https
     .createServer({
@@ -40,10 +42,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 wss.on('connection', (ws) => {
-  console.log('WSS Connection Open')
+  debug('WSS Connection Open')
 })
-wss.on('close', () => {
-  console.log('WSS Connection closed.')
+wss.on('close', (ws) => {
+  debug('WSS Connection closed.')
 });
 
 app.ws('/ws-api/collectGuests', function (ws, req) {
@@ -70,15 +72,6 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
   });
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const buildRoot = path.join(__dirname, '..', '..', 'build');
-  app
-    .use(express.static(buildRoot))
-    .get('/*', function (req, res) {
-    res.sendFile(path.join(buildRoot, 'index.html'));
-  });
-}
-
 app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
   res.send(guestlist);
@@ -91,7 +84,7 @@ app.get('/api/collectGuest/:ticketID', (req, res) => {
 
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
-  console.log(`GuestHash: ${guestHash}`);
+  debug(`GuestHash: ${guestHash}`);
   const currentGuestObj = GuestList.get(guestHash);
   if (!currentGuestObj) {
     res.send({
@@ -138,4 +131,13 @@ app.post('/api/addGuest', (req, res) => {
   res.send({ success: true });
 });
 
-httpsServer.listen(port, () => console.log(`Listening on port ${port}`));
+if (process.env.NODE_ENV === 'production') {
+  const buildRoot = path.join(__dirname, '..', '..', 'build');
+  app
+    .use(express.static(buildRoot))
+    .get('/*', function (req, res) {
+      res.sendFile(path.join(buildRoot, 'index.html'));
+    });
+}
+
+httpsServer.listen(port, () => info(`Listening on port ${port}`));
