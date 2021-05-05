@@ -12,6 +12,8 @@ import Loading from '../components/Loading';
 const PAUSE_TIMER: number = 2000;
 const DEFAULT_RESULT: string = '[scanning]';
 
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.PORT || 5000}`;
+
 type ReasonKeys = "GUEST_NOT_FOUND" | "GUEST_ALREADY_CHECKEDIN" | "UNKNOWN_QR_CODE";
 interface CheckinResponse {
   success: boolean;
@@ -46,11 +48,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
 
-  guestsWS = new WebSocket('ws://localhost:5000/ws-api/collectGuests');
+  guestsWS = new WebSocket(`wss://${HOST_ADDRESS}/ws-api/collectGuests`);
 
   collectGuestData = async () => {
     const response = await fetch(
-      `/api/collectGuests`
+      `https://${HOST_ADDRESS}/api/collectGuests`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);

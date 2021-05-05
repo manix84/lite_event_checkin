@@ -8,7 +8,7 @@ class AboutPage extends React.Component {
     return (
       <div className={st.aboutPage}>
         <div className={'logoContainer'}>
-          <img className={st.logo} src={`${process.env.PUBLIC_URL}/logo.svg`} alt={'Checkin Lite Logo'} />
+          <img className={st.logo} src={`${process.env.PUBLIC_URL}/logo_anim.svg`} alt={'Checkin Lite Logo'} />
           <span className={st.appName}>{packageJson.name}</span>
           <span className={st.appVersion}>v{packageJson.version}</span>
           <span className={st.authorName}>by {packageJson.author.name}</span>

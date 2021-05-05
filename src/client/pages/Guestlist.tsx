@@ -4,6 +4,9 @@ import GuestList from '../components/Guestlist';
 import Loading from '../components/Loading';
 import { GuestlistProps } from '../types';
 
+
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.PORT || 5000}`;
+
 interface GuestlistPageProps { };
 
 interface GuestlistPageState {
@@ -17,11 +20,11 @@ class GuestlistPage extends React.Component<GuestlistPageProps, GuestlistPageSta
     guests: {}
   };
 
-  guestsWS = new WebSocket('ws://localhost:5000/ws-api/collectGuests');
+  guestsWS = new WebSocket(`wss://${HOST_ADDRESS}/ws-api/collectGuests`);
 
   collectGuestData = async () => {
     const response = await fetch(
-      `/api/collectGuests`
+      `https://${HOST_ADDRESS}/api/collectGuests`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);

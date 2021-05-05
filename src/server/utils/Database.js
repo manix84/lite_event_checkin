@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 
-const DEBUG = true;
+const DEBUG = process.env.DEBUG || false;
 
 const
   debug = (msg) => {
