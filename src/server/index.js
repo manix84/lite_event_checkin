@@ -19,13 +19,19 @@ console.log(`SERVER_SALT: ${SERVER_SALT}`);
 
 const port = process.env.PORT || 5000;
 const app = express();
-const httpsServer = https
-  .createServer({
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.crt')
-  }, app);
+let expressWs;
+let httpsServer = app;
+if (process.env.NODE_ENV !== 'production') {
+  httpsServer = https
+    .createServer({
+      key: fs.readFileSync('server.key'),
+      cert: fs.readFileSync('server.crt')
+    }, app);
+  expressWs = require('express-ws')(app, httpsServer);
+} else {
+  expressWs = require('express-ws')(app);
+}
 
-const expressWs = require('express-ws')(app, httpsServer);
 const event = new events.EventEmitter();
 const wss = expressWs.getWss();
 
