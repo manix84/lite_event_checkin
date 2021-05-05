@@ -9,11 +9,6 @@ import successSound from "../content/success.mp3";
 import failureSound from "../content/failure.mp3";
 import Loading from '../components/Loading';
 
-const PAUSE_TIMER: number = 2000;
-const DEFAULT_RESULT: string = '[scanning]';
-
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.REACT_APP_API_PORT || 5000}`;
-
 type ReasonKeys = "GUEST_NOT_FOUND" | "GUEST_ALREADY_CHECKEDIN" | "UNKNOWN_QR_CODE";
 interface CheckinResponse {
   success: boolean;
@@ -34,6 +29,12 @@ interface ScannerPageState {
   guests: GuestlistProps;
   loadingGuests: boolean;
 }
+
+const PAUSE_TIMER: number = 2000;
+const DEFAULT_RESULT: string = '[scanning]';
+
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
+
 class ScannerPage extends React.Component<{}, ScannerPageState> {
   state = {
     result: DEFAULT_RESULT,

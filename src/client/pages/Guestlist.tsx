@@ -4,15 +4,14 @@ import GuestList from '../components/Guestlist';
 import Loading from '../components/Loading';
 import { GuestlistProps } from '../types';
 
-
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.REACT_APP_API_PORT || 5000}`;
-
 interface GuestlistPageProps { };
 
 interface GuestlistPageState {
   loading: boolean;
   guests: GuestlistProps;
 };
+
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
 
 class GuestlistPage extends React.Component<GuestlistPageProps, GuestlistPageState> {
   state = {
