@@ -26,6 +26,8 @@ interface TicketPageState {
   guestData: GuestProps;
 }
 
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.PORT || 5000}`;
+
 class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   state = {
     loading: true,
@@ -39,12 +41,12 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   };
 
   guestsWS = new WebSocket(
-    `ws://localhost:${process.env.PORT || 5000}/ws-api/collectGuest/${this.props.match.params.ticketID}`
+    `wss://${HOST_ADDRESS}/ws-api/collectGuest/${this.props.match.params.ticketID}`
   );
 
   collectGuestData = async () => {
     const response = await fetch(
-      `http://localhost:${process.env.PORT || 5000}/api/collectGuest/${this.props.match.params.ticketID}`
+      `https://${HOST_ADDRESS}/api/collectGuest/${this.props.match.params.ticketID}`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);

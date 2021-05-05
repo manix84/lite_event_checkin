@@ -1,9 +1,11 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const cors = require('cors')
 const { sha256 } = require('js-sha256');
 const dotenv = require('dotenv-flow');
 const events = require('events');
+const https = require('https');
 
 const Database = require('./utils/Database');
 const rdmString = require('./utils/randomStringGenerator');
@@ -17,7 +19,13 @@ console.log(`SERVER_SALT: ${SERVER_SALT}`);
 
 const port = process.env.PORT || 5000;
 const app = express();
-const expressWs = require('express-ws')(app);
+const httpsServer = https
+  .createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.crt')
+  }, app);
+
+const expressWs = require('express-ws')(app, httpsServer);
 const event = new events.EventEmitter();
 const wss = expressWs.getWss();
 
@@ -124,4 +132,4 @@ app.post('/api/addGuest', (req, res) => {
   res.send({ success: true });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+httpsServer.listen(port, () => console.log(`Listening on port ${port}`));
