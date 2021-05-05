@@ -1,29 +1,34 @@
 import React from 'react';
 import { QRCode } from 'react-qrcode-logo';
 import st from './QRCode.module.scss';
-import logo from '../content/logo.svg';
 
 interface QRGeneratorProps {
-  message: string
-  size?: number
+  message: string;
+  size?: number;
 }
 
 interface QRGeneratorState {
-  width: number
+  width: number;
 }
 
 class QRGenerator extends React.Component<QRGeneratorProps, QRGeneratorState> {
   state = {
     width: 0
-  }
+  };
   handleResize = () => {
     this.setState({
       width: (window.innerWidth),
     });
-  }
+  };
+
+  logo: string = (
+    process.env.REACT_APP_CUSTOM_LOGO ?
+      `${process.env.PUBLIC_URL}/${process.env.REACT_APP_CUSTOM_LOGO}` :
+      `${process.env.PUBLIC_URL}/logo_wBg.svg`
+  );
 
   componentDidMount() {
-    this.handleResize()
+    this.handleResize();
     window.addEventListener('resize', this.handleResize);
   }
 
@@ -36,12 +41,12 @@ class QRGenerator extends React.Component<QRGeneratorProps, QRGeneratorState> {
       <div className={st.qrCode}>
         <QRCode
           value={this.props.message}
-          logoImage={logo}
+          logoImage={this.logo}
           size={this.state.width}
-          // qrStyle={'dots'}
+        // qrStyle={'dots'}
         />
       </div>
-    )
+    );
   }
 }
 
