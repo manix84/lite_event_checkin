@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import st from './Guestlist.module.scss';
 import GuestList from '../components/Guestlist';
 import Loading from '../components/Loading';
@@ -55,14 +56,19 @@ class GuestlistPage extends React.Component<GuestlistPageProps, GuestlistPageSta
 
   render() {
     return (
-      <div className={st.guestlistPage}>
-        {this.state.loading ? <Loading /> :
-          <div className={st.guestlistContainer}>
-            <h2>Guestlist</h2>
-            <GuestList guests={this.state.guests} includeQRLink />
-          </div>
-        }
-      </div>
+      <>
+        <Helmet>
+          <title>Checkin Lite | The Guestlist</title>
+        </Helmet>
+        <div className={st.guestlistPage}>
+          {this.state.loading ? <Loading /> :
+            <div className={st.guestlistContainer}>
+              <h2>Guestlist</h2>
+              <GuestList guests={this.state.guests} includeQRLink />
+            </div>
+          }
+        </div>
+      </>
     );
   }
 }

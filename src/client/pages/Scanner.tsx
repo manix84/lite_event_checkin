@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from 'react-helmet';
 import Guestlist from "../components/Guestlist";
 import QrReader from "react-qr-reader";
 import st from "./Scanner.module.scss";
@@ -196,32 +197,37 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
     }
 
     return (
-      <div className={st.scannerPage}>
-        <div className={scannerClassName}>
-          <div className={st.overlay}></div>
-          <div className={st.inlay}>
-            <div className={cn(st.b, st.b1)} />
-            <div className={cn(st.b, st.b2)} />
-            <div className={cn(st.b, st.b3)} />
-            <div className={cn(st.b, st.b4)} />
-            <img src={inlayIcon} alt={''} className={st.inlayIcon} />
+      <>
+        <Helmet>
+          <title>Checkin Lite | Scanner</title>
+        </Helmet>
+        <div className={st.scannerPage}>
+          <div className={scannerClassName}>
+            <div className={st.overlay}></div>
+            <div className={st.inlay}>
+              <div className={cn(st.b, st.b1)} />
+              <div className={cn(st.b, st.b2)} />
+              <div className={cn(st.b, st.b3)} />
+              <div className={cn(st.b, st.b4)} />
+              <img src={inlayIcon} alt={''} className={st.inlayIcon} />
+            </div>
+            <QrReader
+              delay={500}
+              onError={this.handleError}
+              onScan={this.handleScan}
+              showViewFinder={false}
+            />
           </div>
-          <QrReader
-            delay={500}
-            onError={this.handleError}
-            onScan={this.handleScan}
-            showViewFinder={false}
-          />
+          <div className={st.results}>
+            <div>{this.state.result}</div>
+          </div>
+          <div className={st.guestlist}>
+            {(this.state.loadingGuests) ? <Loading /> :
+              <Guestlist guests={this.state.guests} />
+            }
+          </div>
         </div>
-        <div className={st.results}>
-          <div>{this.state.result}</div>
-        </div>
-        <div className={st.guestlist}>
-          {(this.state.loadingGuests) ? <Loading /> :
-            <Guestlist guests={this.state.guests} />
-          }
-        </div>
-      </div>
+      </>
     );
   }
 }

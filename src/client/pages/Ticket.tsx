@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import QRGenerator from '../components/QRCode';
 import Loading from '../components/Loading';
 import { GuestlistProps } from '../types';
@@ -102,6 +103,9 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
           :
           (this.state.guestFound) ?
             <>
+              <Helmet>
+                <title>Checkin Lite | Ticket for {this.state.guestData.firstName} {this.state.guestData.lastName}</title>
+              </Helmet>
               <div className={st.ticketContainer}>
                 <div className={st.ticket}>
                   <img className={st.overlay} src={`${process.env.PUBLIC_URL}/checkMark.svg`} alt={''} />
