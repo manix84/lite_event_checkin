@@ -8,7 +8,7 @@ A simple QR Code check-in system.
 - [x] Generate Key SHA256(Guest Details + Guest Salt + Server Salt)
   - [x] Store keys against names
 - [x] Generate QR code from Key
-- [ ] Generate Output CSV (LastName:String, FirstName:String, CheckedIn:Boolean, QRCode:URL)
+- [x] Generate Output CSV (LastName:String, FirstName:String, CheckedIn:Boolean, QRCode:URL)
 - [x] Create Web Interface
   - [x] QR Scanner (`/scanner`) (Show screen in canvas <del> +Click to scan</del>)
   - [x] Add Sound effect to Scanner for feedback.
@@ -25,3 +25,5 @@ A simple QR Code check-in system.
   - [x] Move from context to websockets to update guest data.
 - [x] Implement About Page, so it looks a little more professional.
 - [x] Add some styling so it doesn't look like a developer through this together in a week.
+- [ ] Add checkin time stamp support.
+- [x] Migrate from JSON DB to MySQL.
