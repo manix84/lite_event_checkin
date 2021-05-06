@@ -66,6 +66,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
     this.successAudio.volume = 0.2;
     this.failureAudio.volume = 0.2;
 
+    // Preloading icons.
+    new Image().src = `${process.env.PUBLIC_URL}/checkMark.svg`;
+    new Image().src = `${process.env.PUBLIC_URL}/crossMark.svg`;
+    new Image().src = `${process.env.PUBLIC_URL}/questionMark.svg`;
+
     this.collectGuestData()
       .then(res => {
         console.log('res', res);
