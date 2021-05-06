@@ -53,7 +53,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> 
             </tfoot>
           }
           <tbody>
-            {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('lastName')).map(([guestHash, guest]) => (
+            {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('firstName')).sort(sortBy('lastName')).map(([guestHash, guest]) => (
               <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>
                 <td>
                   <img className={st.statusIcon} src={guest.checkedIn ? `${process.env.PUBLIC_URL}/checkMark.svg` : `${process.env.PUBLIC_URL}/crossMark.svg`} alt={guest.checkedIn ? 'Checked In!' : 'Not Checked In Yet'} />
