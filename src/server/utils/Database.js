@@ -69,7 +69,7 @@ class Database {
     dbStore[this.dbID][key] = data;
     if (this.options.writeOnSet) {
       this._runQuery(
-        `REPLACE INTO ${this.dbID} (guestHash, lastName, firstName, salt, checkedIn) VALUES (${mysql.escape(key)}, ${mysql.escape(data.lastName)}, ${mysql.escape(data.firstName)}, ${mysql.escape(data.salt)}, ${mysql.escape(data.checkedIn)});`
+        `REPLACE INTO ${this.dbID} (guestHash, lastName, firstName, salt, checkedIn, checkinTime) VALUES (${mysql.escape(key)}, ${mysql.escape(data.lastName)}, ${mysql.escape(data.firstName)}, ${mysql.escape(data.salt)}, ${mysql.escape(data.checkedIn)}, ${mysql.escape(data.checkinTime)});`
       );
     }
   }

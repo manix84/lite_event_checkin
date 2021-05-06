@@ -93,7 +93,8 @@ app.get('/files/export/:type', (req, res) => {
       lastName: guestData.lastName,
       firstName: guestData.firstName,
       ticketURL: `https://${process.env.PUBLIC_URL}/ticket/${guestHash}`,
-      checkedIn: guestData.checkedIn
+      checkedIn: guestData.checkedIn,
+      checkinTime: guestData.checkinTime ? new Date(guestData.checkinTime).toISOString() : undefined
     })
   })
   switch (req.params.type) {
@@ -122,7 +123,8 @@ app.post('/api/checkinGuest', (req, res) => {
     });
   } else {
     const updatedGuestObj = Object.assign(currentGuestObj, {
-      checkedIn: true
+      checkedIn: true,
+      checkinTime: Date.now()
     });
     GuestList.set(guestHash, updatedGuestObj);
     res.send({
