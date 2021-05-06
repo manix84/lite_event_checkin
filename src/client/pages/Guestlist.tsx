@@ -62,8 +62,8 @@ class GuestlistPage extends React.Component<GuestlistPageProps, GuestlistPageSta
         </Helmet>
         <div className={st.guestlistPage}>
           {this.state.loading ? <Loading /> :
-            <div className={st.guestlistContainer}>
-              <h2>Guestlist</h2>
+            <div className={st.container}>
+              <h2 className={st.title}>Guestlist</h2>
               <GuestList guests={this.state.guests} includeQRLink />
             </div>
           }

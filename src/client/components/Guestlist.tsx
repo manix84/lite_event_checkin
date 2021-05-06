@@ -24,6 +24,13 @@ const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
 
 class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> {
   render() {
+    if (Object.keys(this.props.guests).length <= 0) {
+      return (
+        <div className={st.guestlist}>
+          <h2 className={st.noGuestsTitle}>No Guests Found</h2>
+        </div>
+      );
+    }
     return (
       <div className={st.guestlist}>
         <table>
