@@ -1,6 +1,8 @@
 import React from 'react';
 import st from './AddGuest.module.scss';
 
+const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
+
 class AddGuestPage extends React.Component {
 
   handleSubmit = async (event: React.SyntheticEvent) => {
@@ -11,7 +13,7 @@ class AddGuestPage extends React.Component {
     };
     const firstName = target.firstName.value; // typechecks!
     const lastName = target.lastName.value; // typechecks!
-    const response = await fetch('/api/addGuest', {
+    const response = await fetch(`https://${HOST_ADDRESS}/api/addGuest`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
