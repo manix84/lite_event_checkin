@@ -28,8 +28,7 @@ class Loading extends React.Component<LoadingProps, LoadingState> {
     "Spinning violently around the y-axis...",
     "Tokenizing real life...",
     "Bending the spoon...",
-    "Filtering morale...",
-    "Upgrading Windows, your PC will restart several times.\nSit back and relax."
+    "Filtering morale..."
   ];
 
   startLoadingInterval: ReturnType<typeof setTimeout> | undefined;
