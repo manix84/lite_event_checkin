@@ -130,7 +130,7 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
                 <span>This ticket doesn't appear to be valid.</span>
                 <div className={st.errorImg}>
                   <div className={st.errorImg}>
-                    <img src={`${process.env.PUBLIC_URL}/invalid_ticket.png`} alt={''} />
+                    <img src={`${process.env.PUBLIC_URL}/invalidTicket.png`} alt={''} />
                   </div>
                 </div>
               </div>
