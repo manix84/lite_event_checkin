@@ -108,7 +108,7 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
       if (match) {
         this.pauseScan = true;
         (async () => {
-          const response = await fetch('/api/checkinGuest', {
+          const response = await fetch(`https://${HOST_ADDRESS}/api/checkinGuest`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
