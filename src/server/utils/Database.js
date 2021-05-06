@@ -44,7 +44,7 @@ class Database {
       this._runQuery(
         `SELECT * FROM ${this.dbID}`,
         (rows) => {
-          rows.map((obj) => {
+          rows.forEach((obj) => {
             dbStore[this.dbID][obj.guestHash] = {
               lastName: obj.lastName,
               firstName: obj.firstName,
