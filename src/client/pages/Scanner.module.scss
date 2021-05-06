@@ -16,7 +16,6 @@
       bottom: 0;
       right: 0;
       margin: 15px;
-      // background-color: rgba(#000, 0.1);
       backdrop-filter: grayscale(0.75) blur(10px);
       background-blend-mode: multiply;
 
@@ -33,7 +32,6 @@
       bottom: 0;
       right: 0;
       margin: calc(12px + 10%);
-      // outline: 4px dashed rgba(255, 255, 255, 0.75);
       z-index: 3;
 
 
@@ -70,7 +68,7 @@
         width: 33%;
         position: absolute;
         z-index: 4;
-        border-color: rgba(255, 255, 255, 0.75);
+        border-color: rgba(#fff, 0.75);
       }
 
       .inlayIcon {
@@ -81,10 +79,8 @@
 
     &.valid {
       .inlay {
-        outline-color: rgba(0, 255, 0, 0.75);
-
         .b {
-          border-color: rgba(0, 255, 0, 0.75);
+          border-color: rgba(#abbd81, 0.75);
         }
 
         .inlayIcon {
@@ -95,10 +91,9 @@
 
     &.invalid {
       .inlay {
-        outline-color: rgba(255, 0, 0, 0.75);
 
         .b {
-          border-color: rgba(255, 0, 0, 0.75);
+          border-color: rgba(#e15b64, 0.75);
         }
 
         .inlayIcon {
@@ -109,10 +104,9 @@
 
     &.unknown {
       .inlay {
-        outline-color: rgba(0, 150, 255, 0.75);
 
         .b {
-          border-color: rgba(0, 150, 255, 0.75);
+          border-color: rgba(#5b99e1, 0.75);
         }
 
         .inlayIcon {
