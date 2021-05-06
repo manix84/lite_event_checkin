@@ -2,8 +2,25 @@
   display: block;
   @import '../utils/loader.module.scss';
 
-  h2 {
+  .guestName {
     text-align: center;
+  }
+
+  display: block;
+
+  .errorTitle {
+    padding: 4px 2px;
+    margin: 0 0 8px;
+    border-bottom: 1px solid #EEE;
+  }
+
+  .errorImg {
+    margin: 32px 0 16px;
+    width: inherit;
+
+    img {
+      width: 100%;
+    }
   }
 
   .ticketContainer {

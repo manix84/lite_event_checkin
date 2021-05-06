@@ -99,7 +99,12 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
     return (
       <div className={ticketPageClassName}>
         {(this.state.loading) ?
-          <Loading />
+          <>
+            <Helmet>
+              <title>Checkin Lite | Ticket</title>
+            </Helmet>
+            <Loading />
+          </>
           :
           (this.state.guestFound) ?
             <>
@@ -111,17 +116,24 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
                   <img className={st.overlay} src={`${process.env.PUBLIC_URL}/checkMark.svg`} alt={''} />
                   <QRGenerator message={`checkin:${this.state.guestHash}`} />
                 </div>
-                <h2>{this.state.guestData.firstName} {this.state.guestData.lastName}</h2>
+                <h2 className={st.guestName}>{this.state.guestData.firstName} {this.state.guestData.lastName}</h2>
               </div>
               <div className={st.status}>{(this.state.guestData.checkedIn ? 'Checked In!' : 'Not Checked In Yet')}</div>
             </>
             :
             <>
-              <div>Sorry, this ticket doesn't appear to be valid.</div>
-              <ul>
-                <li>{this.state.guestHash}</li>
-                <li>{this.props.match.params.ticketID}</li>
-              </ul>
+              <Helmet>
+                <title>Checkin Lite | Invalid Ticket</title>
+              </Helmet>
+              <div className={st.ticketContainer}>
+                <h2 className={st.errorTitle}>Oh Noes!</h2>
+                <span>This ticket doesn't appear to be valid.</span>
+                <div className={st.errorImg}>
+                  <div className={st.errorImg}>
+                    <img src={`${process.env.PUBLIC_URL}/invalid_ticket.png`} alt={''} />
+                  </div>
+                </div>
+              </div>
             </>
         }
       </div>
