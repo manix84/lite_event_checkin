@@ -6,6 +6,7 @@ const { sha256 } = require('js-sha256');
 const dotenv = require('dotenv-flow');
 const events = require('events');
 const https = require('https');
+const { Parser } = require('json2csv');
 
 const Database = require('./utils/Database');
 const rdmString = require('./utils/randomStringGenerator');
@@ -81,6 +82,29 @@ app.get('/api/collectGuest/:ticketID', (req, res) => {
   const guest = GuestList.get(req.params.ticketID);
   res.send(guest);
 });
+
+
+app.get('/files/export/:type', (req, res) => {
+  const guests = GuestList.getAll();
+  const dbObj = [];
+  const filename = `guestlist_${new Date().toISOString()}`
+  Object.entries(guests).forEach(([guestHash, guestData]) => {
+    dbObj.push({
+      lastName: guestData.lastName,
+      firstName: guestData.firstName,
+      ticketURL: `https://${process.env.PUBLIC_URL}/ticket/${guestHash}`,
+      checkedIn: guestData.checkedIn
+    })
+  })
+  switch (req.params.type) {
+    case 'csv':
+    default:
+      const json2csv = new Parser();
+      res.status(200)
+        .attachment(`${filename}.csv`)
+        .send(json2csv.parse(dbObj));
+  }
+})
 
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;

@@ -6,6 +6,7 @@ import AboutPage from './pages/About';
 import AddGuestPage from './pages/AddGuest';
 import GuestlistPage from './pages/Guestlist';
 import ImportPage from './pages/Import';
+import ExportPage from './pages/Export';
 import ScannerPage from './pages/Scanner';
 import TicketPage from './pages/Ticket';
 import ErrorPage from './pages/Error';
@@ -28,6 +29,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route exact path='/addGuest' component={AddGuestPage} />
             <Route exact path='/guestlist' component={GuestlistPage} />
             <Route exact path='/import' component={ImportPage} />
+            <Route exact path='/export' component={ExportPage} />
             <Route exact path='/scanner' component={ScannerPage} />
             <Route exact path='/ticket/:ticketID' component={TicketPage} />
             <Route component={ErrorPage} />
