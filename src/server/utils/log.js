@@ -2,14 +2,14 @@ const chalk = require('chalk');
 const DEBUG = process.env.DEBUG || false;
 
 const
-  debug = (msg) => {
-    if (DEBUG) console.log(chalk.green(msg));
+  debug = (msg, ...details) => {
+    if (DEBUG) console.log(chalk.green(msg), ...details);
   },
-  info = (msg) => {
-    console.log(chalk.green(msg));
+  info = (msg, ...details) => {
+    console.log(chalk.green(msg), ...details);
   },
-  error = (msg) => {
-    console.log(chalk.red(msg));
+  error = (msg, ...details) => {
+    console.log(chalk.red(msg), ...details);
   };
 
 module.exports = {

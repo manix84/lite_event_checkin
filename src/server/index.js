@@ -13,7 +13,7 @@ const { debug, info } = require('./utils/log');
 
 dotenv.config();
 
-const GuestList = new Database('../guests.json', __dirname);
+const GuestList = new Database('guests');
 const SERVER_SALT = process.env.REACT_APP_SALT || '';
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);

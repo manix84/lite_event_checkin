@@ -1,74 +1,64 @@
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+const mysql = require('mysql');
+const dotenv = require('dotenv-flow');
 const { debug, error } = require('./log');
+
+dotenv.config();
 
 const dbStore = {};
 
+
 class Database {
+  async _runQuery(query, callback = () => { }) {
+    const connection = await mysql.createConnection(
+      process.env.CLEARDB_DATABASE_URL
+    );
+    connection.connect();
+
+    await connection.query({
+      sql: query,
+      timeout: 10000, // 4s
+    }, (err, rows) => {
+      if (err)
+        error('err', err);
+
+      callback(rows)
+    })
+    connection.end();
+  }
+
   constructor(
     dbID,
-    root = __dirname,
     options
   ) {
-    const dbID_normalized = path.normalize(path.join(root, dbID));
-    this.dbID = dbID_normalized;
+    this.dbID = dbID;
     this.options = Object.assign({
       writeOnSet: true,
       refreshSeconds: 20
     }, options);
+    this._connect();
+  }
 
-    if (this._checkExistence()) {
-      this._connect(this.dbID);
-      debug(`${chalk.bold(this.dbID)} found.`);
-    } else {
-      error(`Can't find ${chalk.bold(this.dbID)}`);
+  _connect() {
+    if (!(this.dbID in dbStore)) {
+      dbStore[this.dbID] = dbStore[this.dbID] || {};
+      this._runQuery(
+        `SELECT * FROM ${this.dbID}`,
+        (rows) => {
+          rows.map((obj) => {
+            dbStore[this.dbID][obj.guestHash] = {
+              lastName: obj.lastName,
+              firstName: obj.firstName,
+              salt: obj.salt,
+              checkedIn: Boolean(obj.checkedIn)
+            };
+          });
+        }
+      );
     }
-  }
-
-  _connect(dbID) {
-    if (!(dbID in dbStore)) {
-      dbStore[dbID] = this._read();
-    }
-  }
-
-  _sync(force = false) {
-    debug(`${this.lastSynced + (this.options.refreshSeconds * 1000)} < ${Date.now()}`);
-    if (
-      ((this.lastSynced + (this.options.refreshSeconds * 1000)) < Date.now()) ||
-      force
-    ) {
-      dbStore[this.dbID] = this._read();
-      debug(`Updating Database: ${this.dbID}`);
-    }
-    return true;
-  }
-
-  _checkExistence() {
-    return fs.existsSync(this.dbID);
-  }
-
-  _read() {
-    const output = {};
-    try {
-      const data = fs.readFileSync(this.dbID, 'utf8');
-      Object.assign(output, JSON.parse(data));
-      this.lastSynced = Date.now();
-    } catch (err) {
-      error(err);
-    }
-    return output;
-  }
-
-  _write() {
-    fs.writeFileSync(
-      this.dbID,
-      JSON.stringify(dbStore[this.dbID], null, 2)
-    );
   }
 
   get(key) {
-    this._sync();
+    debug('get', dbStore, key);
     if (key in dbStore[this.dbID]) {
       return dbStore[this.dbID][key];
     }
@@ -78,12 +68,14 @@ class Database {
   set(key, data) {
     dbStore[this.dbID][key] = data;
     if (this.options.writeOnSet) {
-      this._write();
+      this._runQuery(
+        `REPLACE INTO ${this.dbID} (guestHash, lastName, firstName, salt, checkedIn) VALUES (${mysql.escape(key)}, ${mysql.escape(data.lastName)}, ${mysql.escape(data.firstName)}, ${mysql.escape(data.salt)}, ${mysql.escape(data.checkedIn)});`
+      );
     }
   }
 
   getAll() {
-    this._sync();
+    debug('getAll', dbStore);
     return dbStore[this.dbID];
   }
 }
