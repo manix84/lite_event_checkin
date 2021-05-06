@@ -8,6 +8,7 @@ import GuestlistPage from './pages/Guestlist';
 import ImportPage from './pages/Import';
 import ScannerPage from './pages/Scanner';
 import TicketPage from './pages/Ticket';
+import ErrorPage from './pages/Error';
 import st from './App.module.scss';
 
 interface AppProps { };
@@ -29,6 +30,7 @@ class App extends React.Component<AppProps, AppState> {
             <Route exact path='/import' component={ImportPage} />
             <Route exact path='/scanner' component={ScannerPage} />
             <Route exact path='/ticket/:ticketID' component={TicketPage} />
+            <Route component={ErrorPage} />
           </Switch>
         </BrowserRouter>
       </div>
