@@ -10,9 +10,11 @@ class ImportPage extends React.Component {
         <Helmet>
           <title>Checkin Lite | Import Guests</title>
         </Helmet>
-        <div className={st.ImportPage}>
-          Import Page
-      </div>
+        <div className={st.importPage}>
+          <div className={st.container}>
+            <h2 className={st.title}>Import Guestlist</h2>
+          </div>
+        </div>
       </>
     );
   }
