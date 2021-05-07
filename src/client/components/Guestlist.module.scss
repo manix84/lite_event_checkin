@@ -44,10 +44,12 @@
       margin-right: auto;
     }
 
+    a,
     a:link,
     a:active,
     a:visited {
       text-decoration: none;
+      color: #333;
     }
   }
 
