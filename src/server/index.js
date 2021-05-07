@@ -112,12 +112,12 @@ app.post('/api/checkinGuest', (req, res) => {
   debug(`GuestHash: ${guestHash}`);
   const currentGuestObj = GuestList.get(guestHash);
   if (!currentGuestObj) {
-    res.send({
+    res.json({
       success: false,
       reason: 'GUEST_NOT_FOUND'
     });
   } else if (currentGuestObj.checkedIn) {
-    res.send({
+    res.json({
       success: false,
       reason: 'GUEST_ALREADY_CHECKEDIN'
     });
@@ -127,7 +127,7 @@ app.post('/api/checkinGuest', (req, res) => {
       checkinTime: Date.now()
     });
     GuestList.set(guestHash, updatedGuestObj);
-    res.send({
+    res.json({
       success: true,
       guest: {
         hash: guestHash,
@@ -154,7 +154,7 @@ app.post('/api/addGuest', (req, res) => {
     salt,
     checkedIn: false
   });
-  res.send({ success: true });
+  res.json({ success: true });
 });
 
 if (process.env.NODE_ENV === 'production') {
