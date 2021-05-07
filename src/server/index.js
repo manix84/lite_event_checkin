@@ -92,7 +92,7 @@ app.get('/files/export/:type', (req, res) => {
     dbObj.push({
       lastName: guestData.lastName,
       firstName: guestData.firstName,
-      ticketURL: `https://${process.env.PUBLIC_URL}/ticket/${guestHash}`,
+      ticketURL: `https://${req.hostname}/ticket/${guestHash}`,
       checkedIn: guestData.checkedIn,
       checkinTime: guestData.checkinTime ? new Date(guestData.checkinTime).toISOString() : undefined
     })
