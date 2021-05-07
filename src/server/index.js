@@ -54,7 +54,7 @@ app.ws('/ws-api/collectGuests', function (ws, req) {
     const guestData = {};
     guestData[guestHash] = GuestList.get(guestHash);
     if (ws.readyState === 1) {
-      ws.send(JSON.stringify({
+      ws.json(JSON.stringify({
         guestsPartial: guestData
       }));
     }
@@ -66,7 +66,7 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
     const guestData = {};
     guestData[guestHash] = GuestList.get(guestHash);
     if ((ws.readyState === 1) && req.params.ticketID === guestHash) {
-      ws.send(JSON.stringify({
+      ws.json(JSON.stringify({
         guestsPartial: guestData
       }));
     }
@@ -75,12 +75,12 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
 
 app.get('/api/collectGuests', (req, res) => {
   const guestlist = GuestList.getAll();
-  res.send(guestlist);
+  res.json(guestlist);
 });
 
 app.get('/api/collectGuest/:ticketID', (req, res) => {
   const guest = GuestList.get(req.params.ticketID);
-  res.send(guest);
+  res.json(guest);
 });
 
 
