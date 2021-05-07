@@ -60,7 +60,6 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
     this.collectGuestData()
       .then(res => {
         if (res) {
-          console.log('res', res);
           this.setState({
             loading: false,
             guestFound: true,
