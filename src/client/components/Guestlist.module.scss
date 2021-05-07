@@ -9,19 +9,28 @@
   table {
     width: 100%;
     table-layout: auto;
+    border-collapse: collapse;
 
     td,
     th {
       text-align: start;
     }
 
+    thead tr {
+      border-bottom: 1px solid #eee;
+    }
+
     tbody {
       tr:nth-child(even) {
-        background: #DDD
+        background-color: #F1F1F1;
       }
 
       tr:nth-child(odd) {
-        background: #EEE
+        background-color: #FCFCFC;
+      }
+
+      tr.checkedIn {
+        opacity: 0.5;
       }
     }
 
@@ -39,11 +48,6 @@
     a:active,
     a:visited {
       text-decoration: none;
-      color: rgba(0, 0, 0, 1)
-    }
-
-    .checkedIn {
-      color: rgba(0, 0, 0, 0.3);
     }
   }
 
