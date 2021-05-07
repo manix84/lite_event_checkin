@@ -38,7 +38,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> 
             <col />
             <col />
           </colgroup>
-          <thead>
+          {/* <thead>
             <tr>
               <th></th>
               <th>Name</th>
@@ -51,7 +51,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> 
                 <th>Name</th>
               </tr>
             </tfoot>
-          }
+          } */}
           <tbody>
             {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('firstName')).sort(sortBy('lastName')).map(([guestHash, guest]) => (
               <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>

@@ -1,6 +1,7 @@
 .guestlist {
-  overflow: scroll;
-  font-size: 22px;
+  overflow-x: auto;
+  overflow-y: visible;
+  font-size: 1.2em;
 
   .noGuestsTitle {
     text-align: center;
@@ -36,7 +37,7 @@
 
 
     img {
-      height: 1em;
+      height: 0.8em;
       opacity: 1;
 
       display: block;
