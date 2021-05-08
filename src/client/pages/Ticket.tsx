@@ -1,15 +1,26 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import TimeAgo from "javascript-time-ago";
+
 import QRGenerator from '../components/QRCode';
 import Loading from '../components/Loading';
 import { GuestlistProps } from '../types';
 import st from './Ticket.module.scss';
 import cn from 'classnames';
 
+TimeAgo.addLocale(
+  require('javascript-time-ago/locale/en.json')
+);
+const relTime = new TimeAgo('en-GB');
+
+const CHECKIN_TIME_UPDATE_INTERVAL_MS = (30 * 1000); // 30 seconds
+const CHECKIN_TIME_UPDATE_LIMIT = (6 * 60 * 60 * 1000); // 6 hours
+
 interface GuestProps {
   firstName: string;
   lastName: string;
-  checkedIn?: boolean;
+  checkedIn: boolean;
+  checkinTime?: number;
 }
 
 interface TicketPageProps {
@@ -24,7 +35,8 @@ interface TicketPageState {
   loading: boolean;
   guestFound: boolean;
   guestHash?: string;
-  guestData: GuestProps;
+  guestData?: GuestProps;
+  formattedCheckinTime?: string;
 }
 
 const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
@@ -37,8 +49,10 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
     guestData: {
       firstName: "",
       lastName: "",
-      checkedIn: false
-    }
+      checkedIn: false,
+      checkinTime: 0
+    },
+    formattedCheckinTime: undefined
   };
 
   guestsWS = new WebSocket(
@@ -63,9 +77,10 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
           this.setState({
             loading: false,
             guestFound: true,
-            guestData: res,
+            guestData: (res as GuestProps),
             guestHash: guestHash
           });
+          this._updateFormattedCheckinTime();
         } else {
           this.setState({
             loading: false,
@@ -84,9 +99,45 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
           guestData: guestsPartial[guestHash],
           guestHash: guestHash
         });
+        this._updateFormattedCheckinTime();
       }
     });
   }
+
+  _updateFormattedTimeTimeout?: ReturnType<typeof setTimeout>;
+
+  _updateFormattedCheckinTime = () => {
+    if (!this.state.guestData.checkinTime) {
+      return false;
+    }
+    const checkedInAgo = (Date.now() - this.state.guestData.checkinTime);
+    if (checkedInAgo < CHECKIN_TIME_UPDATE_LIMIT) {
+      const formattedCheckinTime = relTime.format(
+        this.state.guestData.checkinTime
+      );
+
+      this.setState({
+        formattedCheckinTime
+      });
+
+      this._updateFormattedTimeTimeout = setTimeout(
+        this._updateFormattedCheckinTime,
+        CHECKIN_TIME_UPDATE_INTERVAL_MS
+      );
+    } else {
+      // Over 6 hours, use basic format (EG: "Friday, 7 May 2021 at 14:46:13 BST")
+      const formattedCheckinTime = new Intl.DateTimeFormat('en-GB', {
+        dateStyle: 'full', timeStyle: 'long'
+      }).format(new Date(this.state.guestData.checkinTime));
+
+      if (this._updateFormattedTimeTimeout)
+        clearTimeout(this._updateFormattedTimeTimeout);
+
+      this.setState({
+        formattedCheckinTime
+      });
+    }
+  };
 
   render() {
     const ticketPageClassName = cn(
@@ -117,7 +168,18 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
                 </div>
                 <h2 className={st.guestName}>{this.state.guestData.firstName} {this.state.guestData.lastName}</h2>
               </div>
-              <div className={st.status}>{(this.state.guestData.checkedIn ? 'Checked In!' : 'Not Checked In Yet')}</div>
+              <div className={st.status}>
+                <span>
+                  {(
+                    this.state.guestData.checkedIn ?
+                      'Checked In' :
+                      'Not Checked In Yet'
+                  )}
+                </span>
+                {this.state.guestData.checkedIn && (
+                  <div>{this.state.formattedCheckinTime}</div>
+                )}
+              </div>
             </>
             :
             <>
