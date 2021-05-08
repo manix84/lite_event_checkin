@@ -49,7 +49,8 @@ class Database {
               lastName: obj.lastName,
               firstName: obj.firstName,
               salt: obj.salt,
-              checkedIn: Boolean(obj.checkedIn)
+              checkedIn: Boolean(obj.checkedIn),
+              checkinTime: Number(obj.checkinTime)
             };
           });
         }
