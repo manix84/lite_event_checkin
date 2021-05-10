@@ -11,13 +11,20 @@ interface GuestlistCompState {
   guests: GuestlistProps;
 }
 
-const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
-  return (a: [guestHash: string, guest: GuestProps], b: [guestHash: string, guest: GuestProps]) => {
-    if (a[1][key] < b[1][key]) {
+const sortBy = (key: (keyof GuestProps)) => {
+  type sortByProps = [
+    guestHash: string,
+    guest: GuestProps
+  ];
+  return (
+    a: sortByProps,
+    b: sortByProps
+  ) => {
+    if (a[1][key]! < b[1][key]!) {
       return -1;
-    } else if (a[1][key] > b[1][key]) {
+    } else if (a[1][key]! > b[1][key]!) {
       return 1;
-    };
+    }
     return 0;
   };
 };
