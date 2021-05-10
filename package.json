@@ -11,7 +11,8 @@
     "url": "https://www.opensource.org/licenses/mit-license.php"
   },
   "engines": {
-    "node": "10.x"
+    "node": "10.x",
+    "npm": "6.x"
   },
   "keywords": [
     "event",
