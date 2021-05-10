@@ -89,11 +89,10 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
         }
       })
       .catch(err => console.log(err));
+
     this.guestsWS.addEventListener("message", (evt: MessageEvent) => {
-      const data: { guestsPartial: GuestlistProps; } = JSON.parse(evt.data);
-      console.log('data:', data);
-      const guestsPartial: GuestlistProps = data.guestsPartial;
-      console.log('guests:', guestsPartial);
+      const resJson: { guestsPartial: GuestlistProps; } = JSON.parse(evt.data);
+      const guestsPartial = resJson.guestsPartial;
       if (guestsPartial && guestHash in guestsPartial) {
         this.setState({
           guestData: guestsPartial[guestHash],
