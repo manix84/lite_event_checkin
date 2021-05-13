@@ -14,7 +14,7 @@ const { debug, info } = require('./utils/log');
 const rdmString = require('./utils/randomStringGenerator');
 
 const GuestList = new Database('guests');
-const SERVER_SALT = process.env.REACT_APP_SALT || '';
+const SERVER_SALT = process.env.SERVER_SALT || '';
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);
 
