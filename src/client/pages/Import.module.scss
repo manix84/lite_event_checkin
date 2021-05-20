@@ -1,14 +1,11 @@
+@import '../utils/page.module.scss';
+
 .importPage {
   .container {
     .title {
-      padding: 4px 2px;
-      margin: 0 0 4px;
-      border-bottom: 1px solid #EEE;
+      @include pageTitle;
     }
 
-    padding: 16px;
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-    background-color: #FFF;
+    @include pageSection;
   }
 }

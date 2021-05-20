@@ -1,5 +1,8 @@
+@import '../utils/page.module.scss';
+
 .scannerPage {
   .scanner {
+    @include pageSection;
     background-color: #FFF;
     padding: 16px;
     position: relative;
