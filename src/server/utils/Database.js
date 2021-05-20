@@ -1,6 +1,15 @@
 const mysql = require('mysql');
 const dotenv = require('dotenv-flow');
-const { debug, error } = require('./log');
+const { error } = require('./log');
+const { sha256 } = require('js-sha256');
+
+const SERVER_SALT = process.env.SERVER_SALT || '';
+
+function generateHashedPassword(password, userSalt) {
+  return sha256(
+    `Password::${password}:${userSalt}:${SERVER_SALT}`
+  );
+}
 
 dotenv.config();
 
@@ -15,7 +24,7 @@ class Database {
 
     await connection.query({
       sql: query,
-      timeout: 10000, // 4s
+      timeout: 4000, // 4s
     }, (err, rows) => {
       if (err)
         error('err', err);
@@ -24,21 +33,20 @@ class Database {
     })
     connection.end();
   }
-
-
   _collectGuests() {
     if (!('guests' in dbStore)) {
       dbStore['guests'] = dbStore['guests'] || {};
       this._runQuery(
         `SELECT * FROM guests`,
         (rows) => {
-          rows.forEach((obj) => {
-            dbStore['guests'][obj.guestHash] = {
-              lastName: obj.lastName,
-              firstName: obj.firstName,
-              salt: obj.salt,
-              checkedIn: Boolean(obj.checkedIn),
-              checkinTime: Number(obj.checkinTime)
+          rows.forEach((row) => {
+            dbStore['guests'][row.guestHash] = {
+              lastName: row.lastName,
+              firstName: row.firstName,
+              salt: row.salt,
+              checkedIn: Boolean(row.checkedIn),
+              checkinTime: Number(row.checkinTime),
+              eventID: row.eventID
             };
           });
         }
@@ -51,8 +59,32 @@ class Database {
       this._runQuery(
         `SELECT * FROM users`,
         (rows) => {
-          rows.forEach((obj) => {
-            dbStore['users'][obj.guestHash] = {
+          rows.forEach((row) => {
+            dbStore['users'][row.id] = {
+              id: row.id,
+              displayName: row.displayName,
+              username: row.userName,
+              password: row.userPasswordHash,
+              salt: row.salt,
+              scannerOnlyHash: row.scannerOnlyHash,
+            };
+          });
+        }
+      );
+    }
+  }
+  _collectEvents() {
+    if (!('events' in dbStore)) {
+      dbStore['events'] = dbStore['events'] || {};
+      this._runQuery(
+        `SELECT * FROM events`,
+        (rows) => {
+          rows.forEach((row) => {
+            dbStore['events'][row.id] = {
+              id: row.id,
+              name: row.name,
+              owner_user_id: row.owner_user_id,
+              custom_logo_url: row.custom_logo_url
             };
           });
         }
@@ -68,6 +100,35 @@ class Database {
       refreshSeconds: 20
     }, options);
     this._collectGuests();
+    this._collectUsers();
+    this._collectEvents();
+  }
+
+  authenticateUser(username, password) {
+    let found = false;
+    let authenticated = false;
+    let data = {};
+    Object.entries(dbStore['users']).forEach(([_id, row]) => {
+      if (row.username.toLowerCase() === username.toLowerCase()) {
+        const hashedPassword = generateHashedPassword(password, row.salt);
+        found = true;
+        if (row.password === hashedPassword) {
+          authenticated = true;
+          data = {
+            id: row.id,
+            displayName: row.displayName,
+            username: row.userName,
+            salt: row.salt,
+            scannerOnlyHash: row.scannerOnlyHash,
+          };
+        }
+      }
+    })
+    return {
+      found,
+      authenticated,
+      data
+    }
   }
 
   getGuest(guestHash) {

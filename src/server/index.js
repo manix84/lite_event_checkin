@@ -14,7 +14,7 @@ const Database = require('./utils/Database');
 const { debug, info } = require('./utils/log');
 const rdmString = require('./utils/randomStringGenerator');
 
-const GuestList = new Database();
+const db = new Database();
 const SERVER_SALT = process.env.SERVER_SALT || '';
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);
@@ -40,6 +40,15 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   expressWs = require('express-ws')(app);
 }
+
+function generateAuthToken(userID, userSalt) {
+  return sha256(`UserToken::${userID}:${userSalt}:${SERVER_SALT}`)
+}
+
+function validateAuthToken(authToken, userID, userSalt) {
+  const validToken = generateAuthToken(userID, userSalt);
+  return (authToken === validToken);
+};
 
 const event = new events.EventEmitter();
 const wss = expressWs.getWss();
@@ -81,7 +90,7 @@ wss.on('upgrade', (ws, req) => {
 app.ws('/ws-api/collectGuests', function (ws, req) {
   event.on("guestUpdated", (guestHash) => {
     const guestData = {};
-    guestData[guestHash] = GuestList.getGuest(guestHash);
+    guestData[guestHash] = db.getGuest(guestHash);
     if (ws.readyState === readyStates.OPEN) {
       ws.send(JSON.stringify({
         guestsPartial: guestData
@@ -93,7 +102,7 @@ app.ws('/ws-api/collectGuests', function (ws, req) {
 app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
   event.on("guestUpdated", (guestHash) => {
     const guestData = {};
-    guestData[guestHash] = GuestList.getGuest(guestHash);
+    guestData[guestHash] = db.getGuest(guestHash);
     if (ws.readyState === readyStates.OPEN) {
       if (req.params.ticketID === guestHash) {
       ws.send(JSON.stringify({
@@ -110,17 +119,17 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
 });
 
 app.get('/api/collectGuests', (req, res) => {
-  const guestlist = GuestList.getAllGuests();
+  const guestlist = db.getAllGuests();
   res.json(guestlist);
 });
 
 app.get('/api/collectGuest/:ticketID', (req, res) => {
-  const guest = GuestList.getGuest(req.params.ticketID);
+  const guest = db.getGuest(req.params.ticketID);
   res.json(guest);
 });
 
 app.get('/files/export/:type', (req, res) => {
-  const guests = GuestList.getAllGuests();
+  const guests = db.getAllGuests();
   const dbObj = [];
   const filename = `guestlist_${new Date().toISOString()}`
   Object.entries(guests).forEach(([guestHash, guestData]) => {
@@ -142,10 +151,36 @@ app.get('/files/export/:type', (req, res) => {
   }
 })
 
+app.post('/api/requestAuthToken', (req, res) => {
+  // const issueTime = Date.now();
+  // const expireTime = issueTime + (24 * 60 * 60 * 1000); // 24hr expiry.
+
+  const user = db.authenticateUser(
+    req.body.username,
+    req.body.password
+  );
+
+  if (user.found && user.authenticated) {
+    res.json({
+      success: true,
+      isAuthenticated: true,
+      authToken: generateAuthToken(user.data.id, user.data.salt),
+      userID: user.data.id
+      // tokenIssued: issueTime,
+      // tokenExpires: expireTime
+    });
+  } else {
+    res.json({
+      success: false,
+      isAuthenticated: false
+    })
+  }
+})
+
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
   debug(`GuestHash: ${guestHash}`);
-  const currentGuestObj = GuestList.getGuest(guestHash);
+  const currentGuestObj = db.getGuest(guestHash);
   if (!currentGuestObj) {
     res.json({
       success: false,
@@ -161,7 +196,7 @@ app.post('/api/checkinGuest', (req, res) => {
       checkedIn: true,
       checkinTime: Date.now()
     });
-    GuestList.updateGuest(guestHash, updatedGuestObj);
+    db.updateGuest(guestHash, updatedGuestObj);
     res.json({
       success: true,
       guest: {
@@ -183,7 +218,7 @@ app.post('/api/addGuest', (req, res) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const hash = sha256(`guest::${firstName}${lastName}${salt}${SERVER_SALT}`);
-  GuestList.addGuest(hash, {
+  db.addGuest(hash, {
     firstName,
     lastName,
     salt,
@@ -198,7 +233,7 @@ if (process.env.NODE_ENV === 'production') {
   const buildRoot = path.join(__dirname, '..', '..', 'build');
   app
     .use(express.static(buildRoot))
-    .get('/*', function (req, res) {
+    .get('/*', function (_req, res) {
       res.sendFile(path.join(buildRoot, 'index.html'));
     });
 }
