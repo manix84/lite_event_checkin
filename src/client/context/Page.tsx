@@ -1,6 +1,9 @@
 import React from 'react';
 
 type PageContextType = {
+  host: {
+    address: string;
+  };
   auth: {
     isAuthenticated: boolean,
     token: string | null;
@@ -9,6 +12,9 @@ type PageContextType = {
 };
 
 export const PageContext = React.createContext<Partial<PageContextType>>({
+  host: {
+    address: ''
+  },
   auth: {
     isAuthenticated: false,
     token: null,

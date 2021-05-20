@@ -15,6 +15,8 @@ import st from './App.module.scss';
 
 import PageContext from './context/Page';
 
+const endpoint = process.env.REACT_APP_API_ENDPOINT || 'localhost';
+const port = process.env.REACT_APP_API_PORT || false;
 
 const storage = sessionStorage;
 
@@ -72,29 +74,32 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <PageContext.Provider value={{
+        host: {
+          address: `${endpoint}${port && `:${port}`}`
+        },
         auth: {
           isAuthenticated: this.state.isAuthenticated,
           token: this.state.authToken,
           userID: this.state.userID
         }
       }}>
-      <div className={st.app}>
-        <Header />
+        <div className={st.app}>
+          <Header />
           {this.state.isAuthenticated ?
-        <BrowserRouter>
-          <Switch>
-            <Redirect exact path="/" to='/scanner' />
+            <BrowserRouter>
+              <Switch>
+                <Redirect exact path="/" to='/scanner' />
                 <Redirect exact path="/login" to='/scanner' />
-            <Route exact path='/addGuest' component={AddGuestPage} />
-            <Route exact path='/guestlist' component={GuestlistPage} />
-            <Route exact path='/import' component={ImportPage} />
-            <Route exact path='/export' component={ExportPage} />
-            <Route exact path='/scanner' component={ScannerPage} />
+                <Route exact path='/addGuest' component={AddGuestPage} />
+                <Route exact path='/guestlist' component={GuestlistPage} />
+                <Route exact path='/import' component={ImportPage} />
+                <Route exact path='/export' component={ExportPage} />
+                <Route exact path='/scanner' component={ScannerPage} />
                 <Route exact path='/about' component={AboutPage} />
-            <Route exact path='/ticket/:ticketID' component={TicketPage} />
-            <Route component={ErrorPage} />
-          </Switch>
-        </BrowserRouter>
+                <Route exact path='/ticket/:ticketID' component={TicketPage} />
+                <Route component={ErrorPage} />
+              </Switch>
+            </BrowserRouter>
             :
             <BrowserRouter>
               <Switch>
@@ -108,7 +113,7 @@ class App extends React.Component<AppProps, AppState> {
               </Switch>
             </BrowserRouter>
           }
-      </div>
+        </div>
       </PageContext.Provider>
     );
   }

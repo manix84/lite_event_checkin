@@ -18,8 +18,6 @@ type LoginPageState = {
   isAuthenticated: boolean;
 };
 
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
-
 class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
   state = {
     isAuthenticated: false,
@@ -28,7 +26,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
   };
 
   async loginUser(credentials: loginCred) {
-    return fetch(`https://${HOST_ADDRESS}/api/requestAuthToken`, {
+    return fetch(`https://${this.context.host.address}/api/requestAuthToken`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

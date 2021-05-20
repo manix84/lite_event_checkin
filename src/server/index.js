@@ -105,15 +105,15 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
     guestData[guestHash] = db.getGuest(guestHash);
     if (ws.readyState === readyStates.OPEN) {
       if (req.params.ticketID === guestHash) {
-      ws.send(JSON.stringify({
+        ws.send(JSON.stringify({
           guestsPartial: guestData,
           guestFound: true
         }));
       } else {
         ws.send(JSON.stringify({
           guestfound: false
-      }));
-    }
+        }));
+      }
     }
   });
 });

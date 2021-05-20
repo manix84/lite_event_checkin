@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from 'react-helmet';
+import PageContext from '../context/Page';
 import Guestlist from "../components/Guestlist";
 import QrReader from "react-qr-reader";
 import st from "./Scanner.module.scss";
@@ -34,8 +35,6 @@ interface ScannerPageState {
 const PAUSE_TIMER: number = 2000;
 const DEFAULT_RESULT: string = '[scanning]';
 
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
-
 class ScannerPage extends React.Component<{}, ScannerPageState> {
   state = {
     result: DEFAULT_RESULT,
@@ -50,11 +49,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
 
-  guestsWS = new WebSocket(`wss://${HOST_ADDRESS}/ws-api/collectGuests`);
+  guestsWS = new WebSocket(`wss://${this.context.host.address}/ws-api/collectGuests`);
 
   collectGuestData = async () => {
     const response = await fetch(
-      `https://${HOST_ADDRESS}/api/collectGuests`
+      `https://${this.context.host.address}/api/collectGuests`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
@@ -113,7 +112,7 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
       if (match) {
         this.pauseScan = true;
         (async () => {
-          const response = await fetch(`https://${HOST_ADDRESS}/api/checkinGuest`, {
+          const response = await fetch(`https://${this.context.host.address}/api/checkinGuest`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -236,5 +235,7 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
     );
   }
 }
+
+ScannerPage.contextType = PageContext;
 
 export default ScannerPage;

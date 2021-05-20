@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import PageContext from '../context/Page';
 import TimeAgo from "javascript-time-ago";
 
 import QRGenerator from '../components/QRCode';
@@ -39,8 +40,6 @@ interface TicketPageState {
   formattedCheckinTime?: string;
 }
 
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}${process.env.REACT_APP_API_PORT && `:${process.env.REACT_APP_API_PORT}`}`;
-
 class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   state = {
     loading: true,
@@ -56,12 +55,12 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
   };
 
   guestsWS = new WebSocket(
-    `wss://${HOST_ADDRESS}/ws-api/collectGuest/${this.props.match.params.ticketID}`
+    `wss://${this.context.host.address}/ws-api/collectGuest/${this.props.match.params.ticketID}`
   );
 
   collectGuestData = async () => {
     const response = await fetch(
-      `https://${HOST_ADDRESS}/api/collectGuest/${this.props.match.params.ticketID}`
+      `https://${this.context.host.address}/api/collectGuest/${this.props.match.params.ticketID}`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
@@ -200,5 +199,7 @@ class TicketPage extends React.Component<TicketPageProps, TicketPageState> {
     );
   }
 }
+
+TicketPage.contextType = PageContext;
 
 export default TicketPage;
