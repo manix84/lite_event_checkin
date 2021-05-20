@@ -3,7 +3,6 @@
 .scannerPage {
   .scanner {
     @include pageSection;
-    background-color: #FFF;
     padding: 16px;
     position: relative;
     width: auto;
@@ -71,7 +70,7 @@
         width: 33%;
         position: absolute;
         z-index: 4;
-        border-color: rgba(#fff, 0.75);
+        border-color: $scanner_scanning_color;
       }
 
       .inlayIcon {
@@ -83,7 +82,7 @@
     &.valid {
       .inlay {
         .b {
-          border-color: rgba(#abbd81, 0.75);
+          border-color: $scanner_valid_color;
         }
 
         .inlayIcon {
@@ -96,7 +95,7 @@
       .inlay {
 
         .b {
-          border-color: rgba(#e15b64, 0.75);
+          border-color: $scanner_invalid_color;
         }
 
         .inlayIcon {
@@ -109,7 +108,7 @@
       .inlay {
 
         .b {
-          border-color: rgba(#5b99e1, 0.75);
+          border-color: $scanner_unknown_color;
         }
 
         .inlayIcon {
@@ -120,7 +119,7 @@
   }
 
   .results {
-    background-color: #FFF;
+    background-color: $section_background_color;
     margin-top: 8px;
     padding: 16px;
     line-height: 1.2em;
@@ -131,7 +130,7 @@
   }
 
   .guestlist {
-    background-color: #FFF;
+    background-color: $section_background_color;
     margin-top: 8px;
     padding: 16px;
   }

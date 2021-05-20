@@ -1,4 +1,6 @@
 @import '../utils/page.module.scss';
+@import '../utils/colours.module.scss';
+
 .ticketPage {
   display: block;
 
@@ -11,7 +13,7 @@
   .errorTitle {
     padding: 4px 2px;
     margin: 0 0 8px;
-    border-bottom: 1px solid #EEE;
+    border-bottom: 1px solid $section_title_border_color;
   }
 
   .errorImg {
@@ -27,11 +29,11 @@
     padding: 16px;
     padding-bottom: 4px;
     margin-bottom: 8px;
-    background-color: #FFF;
+    background-color: $section_background_color;
 
     .ticket {
       position: relative;
-      border-bottom: 1px solid #EEE;
+      border-bottom: 1px solid $section_title_border_color;
 
       .overlay {
         display: none;

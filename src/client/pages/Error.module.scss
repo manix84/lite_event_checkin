@@ -1,5 +1,8 @@
 @import '../utils/page.module.scss';
 
+$glitch_color_1: #ff00c1;
+$glitch_color_2: #00fff9;
+
 .errorPage {
   @include pageSection;
 
@@ -56,7 +59,7 @@
     // Scoots text slightly to the left for the color offset.
     left: 2px;
     // Creates the color 'shadow' that happens on the glitch.
-    text-shadow: -2px 0 #ff00c1;
+    text-shadow: -2px 0 $glitch_color_1;
     /* Creates an initial clip for our glitch. This works in
         a typical top,right,bottom,left fashion and creates a mask
         to only show a certain part of the glitch at a time. */
@@ -70,7 +73,7 @@
   &::after {
     @include glitchCopy;
     left: -2px;
-    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+    text-shadow: -2px 0 $glitch_color_2, 2px 2px $glitch_color_1;
     animation: glitch-anim2 1s infinite linear alternate-reverse;
   }
 }

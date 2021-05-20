@@ -1,3 +1,8 @@
+@import '../utils/colours.module.scss';
+
+$row_1_color: #F1F1F1;
+$row_2_color: #FCFCFC;
+
 .guestlist {
   overflow-x: auto;
   overflow-y: visible;
@@ -18,16 +23,16 @@
     }
 
     thead tr {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid $section_title_border_color;
     }
 
     tbody {
       tr:nth-child(even) {
-        background-color: #F1F1F1;
+        background-color: $row_1_color;
       }
 
       tr:nth-child(odd) {
-        background-color: #FCFCFC;
+        background-color: $row_2_color;
       }
 
       tr.checkedIn {
@@ -50,7 +55,7 @@
     a:active,
     a:visited {
       text-decoration: none;
-      color: #333;
+      color: $page_font_color;
     }
   }
 }
