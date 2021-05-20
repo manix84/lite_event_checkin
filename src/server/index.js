@@ -9,11 +9,12 @@ const https = require('https');
 const { Parser } = require('json2csv');
 
 dotenv.config();
+
 const Database = require('./utils/Database');
 const { debug, info } = require('./utils/log');
 const rdmString = require('./utils/randomStringGenerator');
 
-const GuestList = new Database('guests');
+const GuestList = new Database();
 const SERVER_SALT = process.env.SERVER_SALT || '';
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);
@@ -80,7 +81,7 @@ wss.on('upgrade', (ws, req) => {
 app.ws('/ws-api/collectGuests', function (ws, req) {
   event.on("guestUpdated", (guestHash) => {
     const guestData = {};
-    guestData[guestHash] = GuestList.get(guestHash);
+    guestData[guestHash] = GuestList.getGuest(guestHash);
     if (ws.readyState === readyStates.OPEN) {
       ws.send(JSON.stringify({
         guestsPartial: guestData
@@ -92,7 +93,7 @@ app.ws('/ws-api/collectGuests', function (ws, req) {
 app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
   event.on("guestUpdated", (guestHash) => {
     const guestData = {};
-    guestData[guestHash] = GuestList.get(guestHash);
+    guestData[guestHash] = GuestList.getGuest(guestHash);
     if (ws.readyState === readyStates.OPEN) {
       if (req.params.ticketID === guestHash) {
       ws.send(JSON.stringify({
@@ -109,17 +110,17 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
 });
 
 app.get('/api/collectGuests', (req, res) => {
-  const guestlist = GuestList.getAll();
+  const guestlist = GuestList.getAllGuests();
   res.json(guestlist);
 });
 
 app.get('/api/collectGuest/:ticketID', (req, res) => {
-  const guest = GuestList.get(req.params.ticketID);
+  const guest = GuestList.getGuest(req.params.ticketID);
   res.json(guest);
 });
 
 app.get('/files/export/:type', (req, res) => {
-  const guests = GuestList.getAll();
+  const guests = GuestList.getAllGuests();
   const dbObj = [];
   const filename = `guestlist_${new Date().toISOString()}`
   Object.entries(guests).forEach(([guestHash, guestData]) => {
@@ -144,7 +145,7 @@ app.get('/files/export/:type', (req, res) => {
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
   debug(`GuestHash: ${guestHash}`);
-  const currentGuestObj = GuestList.get(guestHash);
+  const currentGuestObj = GuestList.getGuest(guestHash);
   if (!currentGuestObj) {
     res.json({
       success: false,
@@ -160,7 +161,7 @@ app.post('/api/checkinGuest', (req, res) => {
       checkedIn: true,
       checkinTime: Date.now()
     });
-    GuestList.set(guestHash, updatedGuestObj);
+    GuestList.updateGuest(guestHash, updatedGuestObj);
     res.json({
       success: true,
       guest: {
@@ -181,14 +182,16 @@ app.post('/api/addGuest', (req, res) => {
   const salt = rdmString();
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
-  const hash = sha256(`${firstName}${lastName}${salt}${SERVER_SALT}`);
-  GuestList.set(hash, {
+  const hash = sha256(`guest::${firstName}${lastName}${salt}${SERVER_SALT}`);
+  GuestList.addGuest(hash, {
     firstName,
     lastName,
     salt,
     checkedIn: false
   });
-  res.json({ success: true });
+  res.json({
+    success: true
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {

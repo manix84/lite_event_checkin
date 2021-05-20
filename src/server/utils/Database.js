@@ -6,7 +6,6 @@ dotenv.config();
 
 const dbStore = {};
 
-
 class Database {
   async _runQuery(query, callback = () => { }) {
     const connection = await mysql.createConnection(
@@ -26,26 +25,15 @@ class Database {
     connection.end();
   }
 
-  constructor(
-    dbID,
-    options
-  ) {
-    this.dbID = dbID;
-    this.options = Object.assign({
-      writeOnSet: true,
-      refreshSeconds: 20
-    }, options);
-    this._connect();
-  }
 
-  _connect() {
-    if (!(this.dbID in dbStore)) {
-      dbStore[this.dbID] = dbStore[this.dbID] || {};
+  _collectGuests() {
+    if (!('guests' in dbStore)) {
+      dbStore['guests'] = dbStore['guests'] || {};
       this._runQuery(
-        `SELECT * FROM ${this.dbID}`,
+        `SELECT * FROM guests`,
         (rows) => {
           rows.forEach((obj) => {
-            dbStore[this.dbID][obj.guestHash] = {
+            dbStore['guests'][obj.guestHash] = {
               lastName: obj.lastName,
               firstName: obj.firstName,
               salt: obj.salt,
@@ -57,27 +45,55 @@ class Database {
       );
     }
   }
-
-  get(key) {
-    debug('get', dbStore, key);
-    if (key in dbStore[this.dbID]) {
-      return dbStore[this.dbID][key];
-    }
-    return false;
-  }
-
-  set(key, data) {
-    dbStore[this.dbID][key] = data;
-    if (this.options.writeOnSet) {
+  _collectUsers() {
+    if (!('users' in dbStore)) {
+      dbStore['users'] = dbStore['users'] || {};
       this._runQuery(
-        `REPLACE INTO ${this.dbID} (guestHash, lastName, firstName, salt, checkedIn, checkinTime) VALUES (${mysql.escape(key)}, ${mysql.escape(data.lastName)}, ${mysql.escape(data.firstName)}, ${mysql.escape(data.salt)}, ${mysql.escape(data.checkedIn)}, ${mysql.escape(data.checkinTime)});`
+        `SELECT * FROM users`,
+        (rows) => {
+          rows.forEach((obj) => {
+            dbStore['users'][obj.guestHash] = {
+            };
+          });
+        }
       );
     }
   }
 
-  getAll() {
-    debug('getAll', dbStore);
-    return dbStore[this.dbID];
+  constructor(
+    options
+  ) {
+    this.options = Object.assign({
+      writeOnSet: true,
+      refreshSeconds: 20
+    }, options);
+    this._collectGuests();
+  }
+
+  getGuest(guestHash) {
+    // debug('get', dbStore, guestHash);
+    if (guestHash in dbStore['guests']) {
+      return dbStore['guests'][guestHash];
+    }
+    return false;
+  }
+
+  addGuest(guestData) {
+
+  }
+
+  updateGuest(key, guestData) {
+    dbStore['guests'][key] = guestData;
+    if (this.options.writeOnSet) {
+      this._runQuery(
+        `REPLACE INTO guests (guestHash, lastName, firstName, salt, checkedIn, checkinTime) VALUES (${mysql.escape(key)}, ${mysql.escape(guestData.lastName)}, ${mysql.escape(guestData.firstName)}, ${mysql.escape(guestData.salt)}, ${mysql.escape(guestData.checkedIn)}, ${mysql.escape(guestData.checkinTime)});`
+      );
+    }
+  }
+
+  getAllGuests() {
+    // debug('getAll', dbStore);
+    return dbStore['guests'];
   }
 }
 
