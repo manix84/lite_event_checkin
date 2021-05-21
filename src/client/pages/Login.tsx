@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import AlertBanner from '../components/AlertBanner';
 import PageContext from '../context/Page';
 import st from './Login.module.scss';
 
@@ -24,6 +25,8 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     username: '',
     password: '',
   };
+
+  alertsRef = React.createRef<AlertBanner>();
 
   async loginUser(credentials: loginCred) {
     return fetch(`https://${this.context.host.address}/api/requestAuthToken`, {
@@ -53,8 +56,24 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
             authToken: res.authToken,
             userID: res.userID
           });
+          this.alertsRef.current?.addMessage(
+            'Redirecting you to the scanner',
+            'success'
+          );
+        } else {
+          this.alertsRef.current?.addMessage(
+            'Username or Password was incorrect.',
+            'error'
+          );
         }
       })
+      .catch((err) => {
+        this.alertsRef.current?.addMessage(
+          `Error: ${err}`,
+          'error'
+        );
+      });
+
   };
 
   setUserName = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -76,6 +95,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
           <title>Checkin Lite | Login</title>
         </Helmet>
         <div className={st.loginPage}>
+          <AlertBanner ref={this.alertsRef} />
           <div className={st.container}>
             <h2 className={st.title}>Login</h2>
             <form onSubmit={this.submitHandler}>
