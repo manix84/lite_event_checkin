@@ -38,18 +38,23 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
 
   submitHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const res = await this.loginUser({
+
+    await this.loginUser({
       username: this.state.username,
       password: this.state.password
-    });
-    this.setState({
-      isAuthenticated: res.isAuthenticated
-    });
-    this.props.setAuth({
-      isAuthenticated: res.isAuthenticated,
-      authToken: res.authToken,
-      userID: res.userID
-    });
+    })
+      .then((res) => {
+        if (res.isAuthenticated) {
+          this.setState({
+            isAuthenticated: res.isAuthenticated
+          });
+          this.props.setAuth({
+            isAuthenticated: res.isAuthenticated,
+            authToken: res.authToken,
+            userID: res.userID
+          });
+        }
+      })
   };
 
   setUserName = (e: React.SyntheticEvent<HTMLInputElement>) => {
