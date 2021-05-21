@@ -1,6 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import AlertBanner from '../components/AlertBanner';
+import Button from '../components/Button';
+import Input from '../components/Input';
 import PageContext from '../context/Page';
 import st from './Login.module.scss';
 
@@ -99,17 +101,9 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
           <div className={st.container}>
             <h2 className={st.title}>Login</h2>
             <form onSubmit={this.submitHandler}>
-              <label>
-                <p>Username</p>
-                <input type={'text'} name={'username'} onChange={this.setUserName} />
-              </label>
-              <label>
-                <p>Password</p>
-                <input type={'password'} name={'password'} onChange={this.setPassword} />
-              </label>
-              <div>
-                <button type={'submit'}>Submit</button>
-              </div>
+              <Input type={'text'} name={'username'} onChange={this.setUserName}>Username</Input>
+              <Input type={'password'} name={'password'} onChange={this.setPassword}>Password</Input>
+              <Button isPrimary>Login</Button>
               {this.state.isAuthenticated &&
                 <div className={st.success}>Success!</div>
               }

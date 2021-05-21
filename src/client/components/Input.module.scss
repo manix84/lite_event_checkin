@@ -1,0 +1,33 @@
+@import '../styles/colours.module.scss';
+
+.container {
+  padding-bottom: 12px;
+
+  .input {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0 10px;
+    line-height: 38px;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    margin: 0;
+    border: 1px solid $input_border_color;
+    border-radius: 0 none;
+
+    &:focus {
+      outline: darken($input_border_color, 10%);
+      // outline: 0 none;
+      border-color: inherit;
+      box-shadow: none;
+    }
+  }
+
+  .label {
+    display: block;
+    text-align: left;
+    margin: 0;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+}

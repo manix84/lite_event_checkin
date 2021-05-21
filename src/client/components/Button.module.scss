@@ -3,7 +3,6 @@
 .button {
   box-sizing: border-box;
   width: 100%;
-  color: $button_font_color;
   touch-action: manipulation;
   padding: 12px 16px;
   border: none;
@@ -11,9 +10,36 @@
   vertical-align: top;
   display: inline-block;
   margin-top: 0;
+  margin-bottom: 16px;
   cursor: pointer;
   text-decoration: none;
-  background-color: $button_background_color;
+  font-weight: 700;
+
+  color: $button_secondary_font_color;
+  background-color: $button_secondary_background_color;
+
+  &:hover,
+  &:focus {
+    background-color: darken($button_secondary_background_color, 5%);
+  }
+
+  &:active {
+    background-color: darken($button_secondary_background_color, 10%);
+  }
+
+  &.primary {
+    color: $button_primary_font_color;
+    background-color: $button_primary_background_color;
+
+    &:hover,
+    &:focus {
+      background-color: darken($button_primary_background_color, 5%);
+    }
+
+    &:active {
+      background-color: darken($button_primary_background_color, 10%);
+    }
+  }
 
   .icon {
     width: 24px;
@@ -32,13 +58,11 @@
   &:focus {
     color: inherit;
     text-decoration: none;
-    background-color: darken($button_background_color, 5%);
     outline: none;
   }
 
   &:active {
     color: inherit;
-    background-color: darken($button_background_color, 10%);
     outline: none;
   }
 }
