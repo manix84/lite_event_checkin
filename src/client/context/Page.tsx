@@ -7,6 +7,7 @@ type PageContextType = {
   auth: {
     isAuthenticated: boolean,
     token: string | null;
+    expiration: number | null;
     userID: number | null;
   };
 };
@@ -18,6 +19,7 @@ export const PageContext = React.createContext<Partial<PageContextType>>({
   auth: {
     isAuthenticated: false,
     token: null,
+    expiration: null,
     userID: null
   }
 });

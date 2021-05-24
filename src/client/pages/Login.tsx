@@ -56,6 +56,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
           this.props.setAuth({
             isAuthenticated: res.isAuthenticated,
             authToken: res.authToken,
+            authExpiration: res.authExpiration,
             authUserID: res.authUserID
           });
           this.alertsRef.current?.addMessage(

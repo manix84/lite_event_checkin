@@ -16,6 +16,7 @@ const rdmString = require('./utils/randomStringGenerator');
 
 const db = new Database();
 const SERVER_SALT = process.env.SERVER_SALT || '';
+const AUTH_EXPIRATION_HOURS = process.env.AUTH_EXPIRATION_HOURS || 24;
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);
 
@@ -41,12 +42,12 @@ if (process.env.NODE_ENV !== 'production') {
   expressWs = require('express-ws')(app);
 }
 
-function generateAuthToken(userID, userSalt) {
-  return sha256(`UserToken::${userID}:${userSalt}:${SERVER_SALT}`)
+function generateAuthToken(userID, userSalt, expirationTime) {
+  return sha256(`UserToken::${userID}:${expirationTime}:${userSalt}:${SERVER_SALT}`);
 }
 
-function validateAuthToken(authToken, userID, userSalt) {
-  const validToken = generateAuthToken(userID, userSalt);
+function validateAuthToken(authToken, userID, userSalt, expirationTime) {
+  const validToken = generateAuthToken(userID, userSalt, expirationTime);
   return (authToken === validToken);
 };
 
@@ -152,8 +153,8 @@ app.get('/files/export/:type', (req, res) => {
 })
 
 app.post('/api/requestAuthToken', (req, res) => {
-  // const issueTime = Date.now();
-  // const expireTime = issueTime + (24 * 60 * 60 * 1000); // 24hr expiry.
+  const issueTime = Date.now();
+  const authExpiration = issueTime + (AUTH_EXPIRATION_HOURS * 60 * 60 * 1000); // 24hr expiry.
 
   const user = db.authenticateUser(
     req.body.username,
@@ -164,6 +165,8 @@ app.post('/api/requestAuthToken', (req, res) => {
     res.json({
       success: true,
       isAuthenticated: true,
+      authToken: generateAuthToken(user.data.id, user.data.salt, authExpiration),
+      authExpiration,
       authUserID: user.data.id
       // tokenIssued: issueTime,
       // tokenExpires: expireTime

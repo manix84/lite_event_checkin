@@ -28,6 +28,7 @@ const storage = sessionStorage;
 interface AuthObj {
   isAuthenticated: boolean;
   authToken: string;
+  authExpiration: number;
   authUserID: number;
 }
 
@@ -36,6 +37,7 @@ interface AppProps { };
 interface AppState {
   isAuthenticated: boolean;
   authToken: string | null;
+  authExpiration: number | null;
   authUserID: number | null;
 };
 
@@ -43,6 +45,7 @@ class App extends React.Component<AppProps, AppState> {
   state = {
     isAuthenticated: false,
     authToken: null,
+    authExpiration: null,
     authUserID: null
   };
 
@@ -50,6 +53,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       isAuthenticated: authObj.isAuthenticated,
       authToken: authObj.authToken,
+      authExpiration: authObj.authExpiration,
       authUserID: authObj.authUserID
     });
     storage.setItem('auth', JSON.stringify({
@@ -67,6 +71,7 @@ class App extends React.Component<AppProps, AppState> {
       return {
         isAuthenticated: authObj.isAuthenticated,
         authToken: authObj.authToken,
+        authExpiration: authObj.authExpiration,
         authUserID: authObj.authUserID
       };
     } else {
@@ -78,6 +83,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       isAuthenticated: false,
       authToken: null,
+      authExpiration: null,
       authUserID: null
     });
     storage.removeItem('auth');
@@ -89,6 +95,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       isAuthenticated: authData.isAuthenticated,
       authToken: authData.authToken,
+      authExpiration: authData.authExpiration,
       authUserID: authData.authUserID
     });
 
@@ -104,6 +111,7 @@ class App extends React.Component<AppProps, AppState> {
         },
         auth: {
           isAuthenticated: this.state.isAuthenticated,
+          expiration: this.state.authExpiration,
           token: this.state.authToken,
           userID: this.state.authUserID
         }
