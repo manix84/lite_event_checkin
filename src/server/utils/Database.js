@@ -3,15 +3,8 @@ require('dotenv-flow').config({
   silent: true
 });
 const { error } = require('./log');
-const { sha256 } = require('js-sha256');
 
-const SERVER_SALT = process.env.SERVER_SALT || '';
-
-function generateHashedPassword(password, userSalt) {
-  return sha256(
-    `Password::${password}:${userSalt}:${SERVER_SALT}`
-  );
-}
+const { generatePasswordHash } = require('./password');
 
 const dbStore = {};
 
@@ -110,9 +103,9 @@ class Database {
     let data = {};
     Object.entries(dbStore['users']).forEach(([_id, row]) => {
       if (row.username.toLowerCase() === username.toLowerCase()) {
-        const hashedPassword = generateHashedPassword(password, row.salt);
+        const passwordHash = generatePasswordHash(password, row.salt);
         found = true;
-        if (row.password === hashedPassword) {
+        if (row.password === passwordHash) {
           authenticated = true;
           data = {
             id: row.id,
