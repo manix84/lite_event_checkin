@@ -15,8 +15,10 @@ const { debug, info } = require('./utils/log');
 const rdmString = require('./utils/randomStringGenerator');
 
 const db = new Database();
+
 const SERVER_SALT = process.env.SERVER_SALT || '';
 const AUTH_EXPIRATION_HOURS = process.env.AUTH_EXPIRATION_HOURS || 24;
+const EXTERNAL_USER_ID_OFFSET = process.env.EXTERNAL_USER_ID_OFFSET || 1000;
 
 debug(`SERVER_SALT: ${SERVER_SALT}`);
 
@@ -165,9 +167,13 @@ app.post('/api/requestAuthToken', (req, res) => {
     res.json({
       success: true,
       isAuthenticated: true,
-      authToken: generateAuthToken(user.data.id, user.data.salt, authExpiration),
+      authToken: generateAuthToken(
+        user.data.id,
+        user.data.salt,
+        authExpiration
+      ),
       authExpiration,
-      authUserID: user.data.id
+      authUserID: (user.data.id + EXTERNAL_USER_ID_OFFSET)
       // tokenIssued: issueTime,
       // tokenExpires: expireTime
     });
