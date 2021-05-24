@@ -70,9 +70,9 @@ class App extends React.Component<AppProps, AppState> {
       const authObj = storedAuth && JSON.parse(storedAuth);
       return {
         isAuthenticated: authObj.isAuthenticated,
-        authToken: authObj.authToken,
-        authExpiration: authObj.authExpiration,
-        authUserID: authObj.authUserID
+        authToken: authObj.token,
+        authExpiration: authObj.expiration,
+        authUserID: authObj.userID
       };
     } else {
       return {};
