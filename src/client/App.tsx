@@ -10,7 +10,12 @@ import ExportPage from './pages/Export';
 import ScannerPage from './pages/Scanner';
 import TicketPage from './pages/Ticket';
 import LoginPage from './pages/Login';
+import LogoutPage from './pages/Logout';
 import ErrorPage from './pages/Error';
+
+import AuthenticatedRoute from './route/Authenticated';
+import UnAuthenticatedRoute from './route/UnAuthenticated';
+
 import st from './App.module.scss';
 
 import PageContext from './context/Page';
@@ -60,6 +65,17 @@ class App extends React.Component<AppProps, AppState> {
     };
   };
 
+  unsetAuth = () => {
+    this.setState({
+      isAuthenticated: false,
+      authToken: null,
+      userID: null
+    });
+    storage.removeItem('isAuthenticated');
+    storage.removeItem('authToken');
+    storage.removeItem('userID');
+  };
+
   componentDidMount() {
     const authData = this.getAuth();
     console.log('Collected Auth Data:', authData);
@@ -85,34 +101,43 @@ class App extends React.Component<AppProps, AppState> {
       }}>
         <div className={st.app}>
           <Header />
-          {this.state.isAuthenticated ?
-            <BrowserRouter>
-              <Switch>
-                <Redirect exact path="/" to='/scanner' />
-                <Redirect exact path="/login" to='/scanner' />
-                <Route exact path='/addGuest' component={AddGuestPage} />
-                <Route exact path='/guestlist' component={GuestlistPage} />
-                <Route exact path='/import' component={ImportPage} />
-                <Route exact path='/export' component={ExportPage} />
-                <Route exact path='/scanner' component={ScannerPage} />
-                <Route exact path='/about' component={AboutPage} />
-                <Route exact path='/ticket/:ticketID' component={TicketPage} />
-                <Route component={ErrorPage} />
-              </Switch>
-            </BrowserRouter>
-            :
-            <BrowserRouter>
-              <Switch>
-                <Redirect exact path="/" to='/login' />
-                <Route exact path='/login' render={() => (
+          <BrowserRouter>
+            <Switch>
+              <Redirect exact path={'/'} to={'/scanner'} />
+              <AuthenticatedRoute exact path={'/addGuest'} component={AddGuestPage}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'} />
+              <AuthenticatedRoute exact path={'/guestlist'} component={GuestlistPage}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'} />
+              <AuthenticatedRoute exact path={'/import'} component={ImportPage}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'} />
+              <AuthenticatedRoute exact path={'/export'} component={ExportPage}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'} />
+              <AuthenticatedRoute exact path={'/scanner'} component={ScannerPage}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'} />
+              <UnAuthenticatedRoute exact path={'/login'}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/logout'}
+                render={() => (
                   <LoginPage setAuth={this.setAuth} />
-                )} />
-                <Route exact path='/about' component={AboutPage} />
-                <Route exact path='/ticket/:ticketID' component={TicketPage} />
-                <Route component={ErrorPage} />
-              </Switch>
-            </BrowserRouter>
-          }
+                )}
+              />
+              <AuthenticatedRoute exact path={'/logout'}
+                isAuthenticated={this.state.isAuthenticated}
+                redirectTo={'/login'}
+                render={() => (
+                  <LogoutPage unsetAuth={this.unsetAuth} />
+                )}
+              />
+              <Route exact path={'/about'} component={AboutPage} />
+              <Route exact path={'/ticket/:ticketID'} component={TicketPage} />
+              <Route component={ErrorPage} />
+            </Switch>
+          </BrowserRouter>
         </div>
       </PageContext.Provider>
     );
