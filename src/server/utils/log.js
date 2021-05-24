@@ -1,4 +1,8 @@
 const chalk = require('chalk');
+require('dotenv-flow').config({
+  silent: true
+});
+
 const DEBUG = process.env.DEBUG || false;
 
 const

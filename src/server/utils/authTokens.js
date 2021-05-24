@@ -1,7 +1,7 @@
 const { sha256 } = require('js-sha256');
-const dotenv = require('dotenv-flow');
-
-dotenv.config();
+require('dotenv-flow').config({
+  silent: true
+});
 
 const SERVER_SALT = process.env.SERVER_SALT || '';
 

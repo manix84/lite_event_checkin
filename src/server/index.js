@@ -1,15 +1,15 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors')
+const cors = require('cors');
 const { sha256 } = require('js-sha256');
-const dotenv = require('dotenv-flow');
 const events = require('events');
 const https = require('https');
 const { Parser } = require('json2csv');
 const { generateAuthToken } = require('./utils/authTokens');
-
-dotenv.config();
+require('dotenv-flow').config({
+  silent: true
+});
 
 const Database = require('./utils/Database');
 const { debug, info } = require('./utils/log');

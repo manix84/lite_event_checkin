@@ -1,5 +1,7 @@
 const mysql = require('mysql');
-const dotenv = require('dotenv-flow');
+require('dotenv-flow').config({
+  silent: true
+});
 const { error } = require('./log');
 const { sha256 } = require('js-sha256');
 
@@ -10,8 +12,6 @@ function generateHashedPassword(password, userSalt) {
     `Password::${password}:${userSalt}:${SERVER_SALT}`
   );
 }
-
-dotenv.config();
 
 const dbStore = {};
 
