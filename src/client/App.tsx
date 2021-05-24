@@ -88,7 +88,8 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const { isAuthenticated } = this.state || this.getAuth();
+    const isAuthenticated =
+      this.state.isAuthenticated || this.getAuth().isAuthenticated;
     return (
       <PageContext.Provider value={{
         host: {
