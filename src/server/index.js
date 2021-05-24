@@ -7,6 +7,7 @@ const dotenv = require('dotenv-flow');
 const events = require('events');
 const https = require('https');
 const { Parser } = require('json2csv');
+const { generateAuthToken } = require('./utils/authTokens');
 
 dotenv.config();
 
@@ -43,15 +44,6 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   expressWs = require('express-ws')(app);
 }
-
-function generateAuthToken(userID, userSalt, expirationTime) {
-  return sha256(`UserToken::${userID}:${expirationTime}:${userSalt}:${SERVER_SALT}`);
-}
-
-function validateAuthToken(authToken, userID, userSalt, expirationTime) {
-  const validToken = generateAuthToken(userID, userSalt, expirationTime);
-  return (authToken === validToken);
-};
 
 const event = new events.EventEmitter();
 const wss = expressWs.getWss();
