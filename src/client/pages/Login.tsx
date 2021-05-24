@@ -6,7 +6,7 @@ import Input from '../components/Input';
 import PageContext from '../context/Page';
 import st from './Login.module.scss';
 
-interface loginCred {
+interface LoginCredentials {
   username: string;
   password: string;
 }
@@ -30,7 +30,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
 
   alertsRef = React.createRef<AlertBanner>();
 
-  async loginUser(credentials: loginCred) {
+  async loginUser(credentials: LoginCredentials) {
     return fetch(`https://${this.context.host.address}/api/requestAuthToken`, {
       method: 'POST',
       headers: {
@@ -56,7 +56,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
           this.props.setAuth({
             isAuthenticated: res.isAuthenticated,
             authToken: res.authToken,
-            userID: res.userID
+            authUserID: res.authUserID
           });
           this.alertsRef.current?.addMessage(
             'Redirecting you to the scanner',
@@ -104,9 +104,6 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
               <Input type={'text'} name={'username'} onChange={this.setUserName}>Username</Input>
               <Input type={'password'} name={'password'} onChange={this.setPassword}>Password</Input>
               <Button isPrimary>Login</Button>
-              {this.state.isAuthenticated &&
-                <div className={st.success}>Success!</div>
-              }
             </form>
           </div>
         </div>

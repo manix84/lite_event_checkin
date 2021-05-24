@@ -28,7 +28,7 @@ const storage = sessionStorage;
 interface AuthObj {
   isAuthenticated: boolean;
   authToken: string;
-  userID: number;
+  authUserID: number;
 }
 
 interface AppProps { };
@@ -36,44 +36,51 @@ interface AppProps { };
 interface AppState {
   isAuthenticated: boolean;
   authToken: string | null;
-  userID: number | null;
+  authUserID: number | null;
 };
 
 class App extends React.Component<AppProps, AppState> {
   state = {
     isAuthenticated: false,
     authToken: null,
-    userID: null
+    authUserID: null
   };
 
   setAuth = (authObj: AuthObj) => {
     this.setState({
       isAuthenticated: authObj.isAuthenticated,
       authToken: authObj.authToken,
-      userID: authObj.userID
+      authUserID: authObj.authUserID
     });
-    storage.setItem('isAuthenticated', `${authObj.isAuthenticated}`);
-    storage.setItem('authToken', `${authObj.authToken}`);
-    storage.setItem('userID', `${authObj.userID}`);
+    storage.setItem('auth', JSON.stringify({
+      isAuthenticated: authObj.isAuthenticated,
+      token: authObj.authToken,
+      expiration: authObj.authExpiration,
+      userID: authObj.authUserID
+    }));
   };
 
   getAuth = () => {
-    return {
-      isAuthenticated: Boolean(storage.getItem('isAuthenticated')),
-      authToken: String(storage.getItem('authToken')),
-      userID: Number(storage.getItem('userID'))
-    };
+    const storedAuth = storage.getItem('auth');
+    if (storedAuth) {
+      const authObj = storedAuth && JSON.parse(storedAuth);
+      return {
+        isAuthenticated: authObj.isAuthenticated,
+        authToken: authObj.authToken,
+        authUserID: authObj.authUserID
+      };
+    } else {
+      return {};
+    }
   };
 
   unsetAuth = () => {
     this.setState({
       isAuthenticated: false,
       authToken: null,
-      userID: null
+      authUserID: null
     });
-    storage.removeItem('isAuthenticated');
-    storage.removeItem('authToken');
-    storage.removeItem('userID');
+    storage.removeItem('auth');
   };
 
   componentDidMount() {
@@ -82,7 +89,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       isAuthenticated: authData.isAuthenticated,
       authToken: authData.authToken,
-      userID: authData.userID
+      authUserID: authData.authUserID
     });
 
   }
@@ -98,7 +105,7 @@ class App extends React.Component<AppProps, AppState> {
         auth: {
           isAuthenticated: this.state.isAuthenticated,
           token: this.state.authToken,
-          userID: this.state.userID
+          userID: this.state.authUserID
         }
       }}>
         <div className={st.app}>

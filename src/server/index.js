@@ -164,8 +164,7 @@ app.post('/api/requestAuthToken', (req, res) => {
     res.json({
       success: true,
       isAuthenticated: true,
-      authToken: generateAuthToken(user.data.id, user.data.salt),
-      userID: user.data.id
+      authUserID: user.data.id
       // tokenIssued: issueTime,
       // tokenExpires: expireTime
     });
