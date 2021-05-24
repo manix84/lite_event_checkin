@@ -59,9 +59,9 @@ class App extends React.Component<AppProps, AppState> {
 
   getAuth = () => {
     return {
-      isAuthenticated: storage.getItem('isAuthenticated'),
-      authToken: storage.getItem('authToken'),
-      userID: storage.getItem('userID')
+      isAuthenticated: Boolean(storage.getItem('isAuthenticated')),
+      authToken: String(storage.getItem('authToken')),
+      userID: Number(storage.getItem('userID'))
     };
   };
 
@@ -80,14 +80,15 @@ class App extends React.Component<AppProps, AppState> {
     const authData = this.getAuth();
     console.log('Collected Auth Data:', authData);
     this.setState({
-      isAuthenticated: Boolean(authData.isAuthenticated),
+      isAuthenticated: authData.isAuthenticated,
       authToken: authData.authToken,
-      userID: Number(authData.userID)
+      userID: authData.userID
     });
 
   }
 
   render() {
+    const { isAuthenticated } = this.getAuth();
     return (
       <PageContext.Provider value={{
         host: {
@@ -105,29 +106,29 @@ class App extends React.Component<AppProps, AppState> {
             <Switch>
               <Redirect exact path={'/'} to={'/scanner'} />
               <AuthenticatedRoute exact path={'/addGuest'} component={AddGuestPage}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'} />
               <AuthenticatedRoute exact path={'/guestlist'} component={GuestlistPage}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'} />
               <AuthenticatedRoute exact path={'/import'} component={ImportPage}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'} />
               <AuthenticatedRoute exact path={'/export'} component={ExportPage}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'} />
               <AuthenticatedRoute exact path={'/scanner'} component={ScannerPage}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'} />
               <UnAuthenticatedRoute exact path={'/login'}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/logout'}
                 render={() => (
                   <LoginPage setAuth={this.setAuth} />
                 )}
               />
               <AuthenticatedRoute exact path={'/logout'}
-                isAuthenticated={this.state.isAuthenticated}
+                isAuthenticated={isAuthenticated}
                 redirectTo={'/login'}
                 render={() => (
                   <LogoutPage unsetAuth={this.unsetAuth} />
