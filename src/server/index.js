@@ -146,7 +146,7 @@ app.get('/files/export/:type', (req, res) => {
   }
 })
 
-app.post('/api/requestAuthToken', (req, res) => {
+app.post('/api/loginUser', (req, res) => {
   const issueTime = Date.now();
   const authExpiration = issueTime + (AUTH_EXPIRATION_HOURS * 60 * 60 * 1000); // 24hr expiry.
 

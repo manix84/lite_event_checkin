@@ -31,7 +31,7 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
   alertsRef = React.createRef<AlertBanner>();
 
   async loginUser(credentials: LoginCredentials) {
-    return fetch(`https://${this.context.host.address}/api/requestAuthToken`, {
+    return fetch(`https://${this.context.host.address}/api/loginUser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
