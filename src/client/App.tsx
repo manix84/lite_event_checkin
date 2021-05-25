@@ -38,17 +38,17 @@ interface AppProps { };
 
 interface AppState {
   isAuthenticated: boolean;
-  authToken: string | null;
-  authExpiration: number | null;
-  authUserID: number | null;
+  authToken?: string;
+  authExpiration?: number;
+  authUserID?: number;
 };
 
 class App extends React.Component<AppProps, AppState> {
   state = {
     isAuthenticated: false,
-    authToken: null,
-    authExpiration: null,
-    authUserID: null
+    authToken: undefined,
+    authExpiration: undefined,
+    authUserID: undefined
   };
 
   handleLogin = (loginObj: LoginObj) => {
@@ -84,9 +84,9 @@ class App extends React.Component<AppProps, AppState> {
   handleLogout = () => {
     this.setState({
       isAuthenticated: false,
-      authToken: null,
-      authExpiration: null,
-      authUserID: null
+      authToken: undefined,
+      authExpiration: undefined,
+      authUserID: undefined
     });
     storage.removeItem('auth');
   };

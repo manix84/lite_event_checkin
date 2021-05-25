@@ -6,12 +6,12 @@ type PageContextType = {
   };
   isAuthenticated: boolean;
   auth: {
-    token: string | null;
-    expiration: number | null;
-    userID: number | null;
+    token?: string;
+    expiration?: number;
+    userID?: number;
   };
   user: {
-    displayName: string | null;
+    displayName?: string;
   };
 };
 
@@ -21,12 +21,12 @@ export const PageContext = React.createContext<Partial<PageContextType>>({
   },
   isAuthenticated: false,
   auth: {
-    token: null,
-    expiration: null,
-    userID: null
+    token: undefined,
+    expiration: undefined,
+    userID: undefined
   },
   user: {
-    displayName: null
+    displayName: undefined
   }
 });
 
