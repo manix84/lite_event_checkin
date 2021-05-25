@@ -15,12 +15,49 @@
     border: 1px solid $input_border_color;
     border-radius: 0 none;
 
+    &[type=password] {
+      font-size: 32px;
+    }
+
     &:focus {
       outline: darken($input_border_color, 10%);
       // outline: 0 none;
       border-color: inherit;
       box-shadow: none;
     }
+  }
+
+  .alert {
+    box-sizing: border-box;
+    transition: all 0.2s;
+    overflow: hidden;
+    padding: 0 4px;
+
+    height: 0px;
+    line-height: 0px;
+
+    &.error,
+    &.warn,
+    &.success {
+      height: 24px;
+      line-height: 24px;
+    }
+
+    &.error {
+      background-color: $alert_error_background_color;
+      color: $alert_error_font_color;
+    }
+
+    &.warn {
+      background-color: $alert_warning_background_color;
+      color: $alert_warning_font_color;
+    }
+
+    &.success {
+      background-color: $alert_success_background_color;
+      color: $alert_success_font_color;
+    }
+
   }
 
   .label {
