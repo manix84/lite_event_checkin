@@ -159,15 +159,18 @@ app.post('/api/loginUser', (req, res) => {
     res.json({
       success: true,
       isAuthenticated: true,
-      authToken: generateAuthToken(
-        user.data.id,
-        user.data.salt,
-        authExpiration
-      ),
-      authExpiration,
-      authUserID: (user.data.id + EXTERNAL_USER_ID_OFFSET)
-      // tokenIssued: issueTime,
-      // tokenExpires: expireTime
+      auth: {
+        token: generateAuthToken(
+          user.data.id,
+          user.data.salt,
+          authExpiration
+        ),
+        expiration: authExpiration,
+        userID: (user.data.id + EXTERNAL_USER_ID_OFFSET),
+      },
+      user: {
+        displayName: user.data.displayName,
+      }
     });
   } else {
     res.json({

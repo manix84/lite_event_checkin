@@ -25,11 +25,13 @@ const port = process.env.REACT_APP_API_PORT || false;
 
 const storage = sessionStorage;
 
-interface AuthObj {
+interface LoginObj {
   isAuthenticated: boolean;
-  authToken: string;
-  authExpiration: number;
-  authUserID: number;
+  auth: {
+    token: string;
+    expiration: number;
+    userID: number;
+  };
 }
 
 interface AppProps { };
@@ -49,18 +51,18 @@ class App extends React.Component<AppProps, AppState> {
     authUserID: null
   };
 
-  setAuth = (authObj: AuthObj) => {
+  handleLogin = (loginObj: LoginObj) => {
     this.setState({
-      isAuthenticated: authObj.isAuthenticated,
-      authToken: authObj.authToken,
-      authExpiration: authObj.authExpiration,
-      authUserID: authObj.authUserID
+      isAuthenticated: loginObj.isAuthenticated,
+      authToken: loginObj.auth.token,
+      authExpiration: loginObj.auth.expiration,
+      authUserID: loginObj.auth.userID
     });
     storage.setItem('auth', JSON.stringify({
-      isAuthenticated: authObj.isAuthenticated,
-      token: authObj.authToken,
-      expiration: authObj.authExpiration,
-      userID: authObj.authUserID
+      isAuthenticated: loginObj.isAuthenticated,
+      token: loginObj.auth.token,
+      expiration: loginObj.auth.expiration,
+      userID: loginObj.auth.userID
     }));
   };
 
@@ -79,7 +81,7 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  unsetAuth = () => {
+  handleLogout = () => {
     this.setState({
       isAuthenticated: false,
       authToken: null,
@@ -106,11 +108,11 @@ class App extends React.Component<AppProps, AppState> {
       this.state.isAuthenticated || this.getAuth().isAuthenticated;
     return (
       <PageContext.Provider value={{
+        isAuthenticated: this.state.isAuthenticated,
         host: {
           address: `${endpoint}${port && `:${port}`}`
         },
         auth: {
-          isAuthenticated: this.state.isAuthenticated,
           expiration: this.state.authExpiration,
           token: this.state.authToken,
           userID: this.state.authUserID
@@ -140,14 +142,14 @@ class App extends React.Component<AppProps, AppState> {
                 isAuthenticated={isAuthenticated}
                 redirectTo={'/logout'}
                 render={() => (
-                  <LoginPage setAuth={this.setAuth} />
+                  <LoginPage handleLogin={this.handleLogin} />
                 )}
               />
               <AuthenticatedRoute exact path={'/logout'}
                 isAuthenticated={isAuthenticated}
                 redirectTo={'/login'}
                 render={() => (
-                  <LogoutPage unsetAuth={this.unsetAuth} />
+                  <LogoutPage handleLogout={this.handleLogout} />
                 )}
               />
               <Route exact path={'/about'} component={AboutPage} />

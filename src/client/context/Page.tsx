@@ -4,11 +4,14 @@ type PageContextType = {
   host: {
     address: string;
   };
+  isAuthenticated: boolean;
   auth: {
-    isAuthenticated: boolean,
     token: string | null;
     expiration: number | null;
     userID: number | null;
+  };
+  user: {
+    displayName: string | null;
   };
 };
 
@@ -16,11 +19,14 @@ export const PageContext = React.createContext<Partial<PageContextType>>({
   host: {
     address: ''
   },
+  isAuthenticated: false,
   auth: {
-    isAuthenticated: false,
     token: null,
     expiration: null,
     userID: null
+  },
+  user: {
+    displayName: null
   }
 });
 

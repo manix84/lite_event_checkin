@@ -5,7 +5,7 @@ import PageContext from '../context/Page';
 import st from './Logout.module.scss';
 
 interface LogoutPageProps {
-  unsetAuth: Function;
+  handleLogout: Function;
 }
 
 type LogoutPageState = {
@@ -18,7 +18,7 @@ class LogoutPage extends React.Component<LogoutPageProps, LogoutPageState> {
   };
 
   logout: React.MouseEventHandler = (e: React.SyntheticEvent) => {
-    this.props.unsetAuth();
+    this.props.handleLogout();
   };
 
   render() {

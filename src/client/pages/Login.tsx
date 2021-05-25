@@ -12,8 +12,21 @@ interface LoginCredentials {
 }
 
 interface LoginPageProps {
-  setAuth: Function;
+  handleLogin: Function;
 }
+
+type LoginResponse = {
+  success: boolean;
+  isAuthenticated: boolean;
+  auth: {
+    token: string;
+    expiration: number;
+    userID: number;
+  };
+  user: {
+    displayName: string;
+  };
+};
 
 type LoginPageState = {
   username: string;
@@ -48,16 +61,21 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
       username: this.state.username,
       password: this.state.password
     })
-      .then((res) => {
-        if (res.isAuthenticated) {
+      .then((res: LoginResponse) => {
+        if (res.success) {
           this.setState({
             isAuthenticated: res.isAuthenticated
           });
-          this.props.setAuth({
+          this.props.handleLogin({
             isAuthenticated: res.isAuthenticated,
-            authToken: res.authToken,
-            authExpiration: res.authExpiration,
-            authUserID: res.authUserID
+            auth: {
+              token: res.auth.token,
+              expiration: res.auth.expiration,
+              userID: res.auth.userID,
+            },
+            user: {
+              displayName: res.user.displayName
+            }
           });
           this.alertsRef.current?.addMessage(
             'Redirecting you to the scanner',
