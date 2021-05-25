@@ -97,16 +97,14 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
 
   };
 
-  setUserName = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({
-      username: e.currentTarget.value
-    });
-  };
+  handleInputChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
 
-  setPassword = (e: React.SyntheticEvent<HTMLInputElement>) => {
     this.setState({
-      password: e.currentTarget.value
-    });
+      [name]: value
+    } as Pick<LoginPageState, keyof LoginPageState>);
   };
 
   render() {
@@ -120,8 +118,8 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
           <div className={st.container}>
             <h2 className={st.title}>Login</h2>
             <form onSubmit={this.submitHandler}>
-              <Input type={'text'} name={'username'} onChange={this.setUserName}>Username</Input>
-              <Input type={'password'} name={'password'} onChange={this.setPassword}>Password</Input>
+              <Input type={'text'} name={'username'} onChange={this.handleInputChange}>Username</Input>
+              <Input type={'password'} name={'password'} onChange={this.handleInputChange}>Password</Input>
               <Button isPrimary>Login</Button>
             </form>
           </div>
