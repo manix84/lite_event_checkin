@@ -1,10 +1,10 @@
-const mysql = require('mysql');
 require('dotenv-flow').config({
   silent: true
 });
-const { error } = require('./log');
 
-const { generatePasswordHash } = require('./password');
+const mysql = require('mysql');
+const { error, debug } = require('./log');
+const { generatePasswordHash } = require('./passwordHash');
 
 const dbStore = {};
 
@@ -56,10 +56,10 @@ class Database {
             dbStore['users'][row.id] = {
               id: row.id,
               displayName: row.displayName,
-              username: row.userName,
-              password: row.userPasswordHash,
+              username: row.username,
+              password: row.passwordHash,
               salt: row.salt,
-              scannerOnlyHash: row.scannerOnlyHash,
+              scannerHash: row.scannerHash,
             };
           });
         }
@@ -110,9 +110,9 @@ class Database {
           data = {
             id: row.id,
             displayName: row.displayName,
-            username: row.userName,
+            username: row.username,
             salt: row.salt,
-            scannerOnlyHash: row.scannerOnlyHash,
+            scannerHash: row.scannerHash,
           };
         }
       }
