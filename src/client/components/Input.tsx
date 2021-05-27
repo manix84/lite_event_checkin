@@ -15,6 +15,7 @@ interface InputProps {
   name: string;
   type?: string;
   placeholder?: string;
+  required?: boolean;
   alertType?: AlertEnum;
   alertText?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
@@ -52,6 +53,7 @@ class Input extends React.Component<InputProps, InputState> {
           name={this.props.name}
           type={this.props.type}
           placeholder={this.props.placeholder}
+          required={this.props.required}
           id={this.uniqueID}
           onChange={this.props.onChange}
         />

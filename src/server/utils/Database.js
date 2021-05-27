@@ -4,7 +4,9 @@ require('dotenv-flow').config({
 
 const mysql = require('mysql');
 const { error, debug } = require('./log');
+const rdmString = require('./rdmString');
 const { generatePasswordHash } = require('./passwordHash');
+const { generateScannerHash } = require('./scannerHash');
 
 const dbStore = {};
 
@@ -18,11 +20,11 @@ class Database {
     await connection.query({
       sql: query,
       timeout: 4000, // 4s
-    }, (err, rows) => {
+    }, (err, results) => {
       if (err)
         error('err', err);
 
-      callback(rows)
+      callback(results, err)
     })
     connection.end();
   }
@@ -122,6 +124,46 @@ class Database {
       authenticated,
       data
     }
+  }
+
+  registerUser(username, password, displayName, callback) {
+    const salt = rdmString();
+    const scannerHash = generateScannerHash(salt);
+    const passwordHash = generatePasswordHash(password, salt);
+
+    let userID;
+
+    this._runQuery(
+      `INSERT INTO users (username, passwordHash, displayName, salt, scannerHash) VALUES (${mysql.escape(username)}, ${mysql.escape(passwordHash)}, ${mysql.escape(displayName)}, ${mysql.escape(salt)}, ${mysql.escape(scannerHash)});`,
+      (results, err) => {
+        userID = results && results.insertId;
+
+        if (Boolean(userID) && !isNaN(userID)) {
+          dbStore['users'][userID] = {
+            id: userID,
+            displayName: displayName,
+            username: username,
+            password: passwordHash,
+            salt: salt,
+            scannerHash: scannerHash
+          };
+          callback({
+            success: Boolean(userID),
+            id: userID,
+            displayName: displayName,
+            username: username,
+            salt: salt,
+            scannerHash: scannerHash
+          });
+        } else {
+          callback({
+            success: false,
+            reason: err.code,
+            reasonText: err.sqlMessage
+          });
+        }
+      }
+    );
   }
 
   getGuest(guestHash) {

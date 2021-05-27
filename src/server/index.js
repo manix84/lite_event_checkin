@@ -1,27 +1,30 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');
-const { sha256 } = require('js-sha256');
-const events = require('events');
-const https = require('https');
-const { Parser } = require('json2csv');
-const { generateAuthToken } = require('./utils/authTokens');
 require('dotenv-flow').config({
   silent: true
 });
 
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const cors = require('cors');
+const events = require('events');
+const https = require('https');
+const { Parser } = require('json2csv');
 const Database = require('./utils/Database');
 const { debug, info } = require('./utils/log');
-const rdmString = require('./utils/randomStringGenerator');
+const rdmString = require('./utils/rdmString');
+const { generateAuthToken } = require('./utils/authTokens');
+const { generateGuestHash } = require('./utils/guestHash');
 
 const db = new Database();
 
-const SERVER_SALT = process.env.SERVER_SALT || '';
 const AUTH_EXPIRATION_HOURS = process.env.AUTH_EXPIRATION_HOURS || 24;
 const EXTERNAL_USER_ID_OFFSET = process.env.EXTERNAL_USER_ID_OFFSET || 1000;
 
-debug(`SERVER_SALT: ${SERVER_SALT}`);
+Object.entries(process.env).forEach(([key, value]) => {
+  if (value && !key.match(/^(npm_|PATH)/ig))
+    debug(`${key}: ${value}`);
+});
+console.log(); //Empty new line
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -170,6 +173,7 @@ app.post('/api/loginUser', (req, res) => {
       },
       user: {
         displayName: user.data.displayName,
+        userScannerHash: user.data.scannerHash
       }
     });
   } else {
@@ -179,6 +183,53 @@ app.post('/api/loginUser', (req, res) => {
     })
   }
 })
+
+app.post('/api/registerUser', async function (req, res) {
+  const errors = [];
+  const displayName = req.body.displayName;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const issueTime = Date.now();
+  const authExpiration = issueTime + (AUTH_EXPIRATION_HOURS * 60 * 60 * 1000);
+
+  if (!username.match(/^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)) {
+    errors.push('BAD_USERNAME');
+  }
+  if (password.length <= 0) {
+    errors.push('SHORT_PASSWORD');
+  }
+  if (displayName.length <= 0) {
+    errors.push('SHORT_DISPLAY_NAME');
+  }
+
+  if (errors.length <= 0) {
+    db.registerUser(username, password, displayName, (userData) => {
+      res.json({
+        success: true,
+        isAuthenticated: true,
+        auth: {
+          token: generateAuthToken(
+            userData.id,
+            userData.salt,
+            authExpiration
+          ),
+          expiration: authExpiration,
+          userID: (userData.id + EXTERNAL_USER_ID_OFFSET),
+        },
+        user: {
+          displayName: userData.displayName,
+          userScannerHash: userData.scannerHash
+        }
+      });
+    });
+  } else {
+    res.json({
+      success: false,
+      reason: errors.join(', ')
+    })
+  }
+});
 
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
@@ -220,7 +271,7 @@ app.post('/api/addGuest', (req, res) => {
   const salt = rdmString();
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
-  const hash = sha256(`guest::${firstName}${lastName}${salt}${SERVER_SALT}`);
+  const hash = generateGuestHash(firstName, lastName, salt);
   db.addGuest(hash, {
     firstName,
     lastName,

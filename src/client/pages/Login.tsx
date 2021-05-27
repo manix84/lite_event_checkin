@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import AlertBanner from '../components/AlertBanner';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import Link from '../components/Link';
 import PageContext from '../context/Page';
 import st from './Login.module.scss';
 
@@ -122,6 +123,9 @@ class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
               <Input type={'password'} name={'password'} onChange={this.handleInputChange}>Password</Input>
               <Button isPrimary>Login</Button>
             </form>
+            <div className={st.registerLink}>
+              <Link href={'/register'}>Did you need to Register?</Link>
+            </div>
           </div>
         </div>
       </>

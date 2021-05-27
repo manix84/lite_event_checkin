@@ -1,0 +1,12 @@
+@import '../styles/colours.module.scss';
+
+.link {
+
+  &,
+  &:link,
+  &:active,
+  &:visited {
+    text-decoration: none;
+    color: $link_font_color;
+  }
+}

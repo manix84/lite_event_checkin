@@ -1,6 +1,6 @@
 @import '../styles/page.module.scss';
 
-.loginPage {
+.registerPage {
   .container {
     .title {
       @include pageTitle;
@@ -8,7 +8,7 @@
 
     @include pageSection;
 
-    .registerLink {
+    .loginLink {
       text-align: end;
       margin-bottom: 16px;
     }

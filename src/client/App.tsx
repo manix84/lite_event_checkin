@@ -19,6 +19,7 @@ import UnAuthenticatedRoute from './route/UnAuthenticated';
 import st from './App.module.scss';
 
 import PageContext from './context/Page';
+import RegisterPage from './pages/Register';
 
 const endpoint = process.env.REACT_APP_API_ENDPOINT || 'localhost';
 const port = process.env.REACT_APP_API_PORT || false;
@@ -51,21 +52,6 @@ class App extends React.Component<AppProps, AppState> {
     authUserID: undefined
   };
 
-  handleLogin = (loginObj: LoginObj) => {
-    this.setState({
-      isAuthenticated: loginObj.isAuthenticated,
-      authToken: loginObj.auth.token,
-      authExpiration: loginObj.auth.expiration,
-      authUserID: loginObj.auth.userID
-    });
-    storage.setItem('auth', JSON.stringify({
-      isAuthenticated: loginObj.isAuthenticated,
-      token: loginObj.auth.token,
-      expiration: loginObj.auth.expiration,
-      userID: loginObj.auth.userID
-    }));
-  };
-
   getAuth = () => {
     const storedAuth = storage.getItem('auth');
     if (storedAuth) {
@@ -79,6 +65,21 @@ class App extends React.Component<AppProps, AppState> {
     } else {
       return {};
     }
+  };
+
+  handleLogin = (loginObj: LoginObj) => {
+    this.setState({
+      isAuthenticated: loginObj.isAuthenticated,
+      authToken: loginObj.auth.token,
+      authExpiration: loginObj.auth.expiration,
+      authUserID: loginObj.auth.userID
+    });
+    storage.setItem('auth', JSON.stringify({
+      isAuthenticated: loginObj.isAuthenticated,
+      token: loginObj.auth.token,
+      expiration: loginObj.auth.expiration,
+      userID: loginObj.auth.userID
+    }));
   };
 
   handleLogout = () => {
@@ -143,6 +144,13 @@ class App extends React.Component<AppProps, AppState> {
                 redirectTo={'/logout'}
                 render={() => (
                   <LoginPage handleLogin={this.handleLogin} />
+                )}
+              />
+              <UnAuthenticatedRoute exact path={'/register'}
+                isAuthenticated={isAuthenticated}
+                redirectTo={'/logout'}
+                render={() => (
+                  <RegisterPage handleLogin={this.handleLogin} />
                 )}
               />
               <AuthenticatedRoute exact path={'/logout'}
