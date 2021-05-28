@@ -10,7 +10,7 @@ const events = require('events');
 const https = require('https');
 const { Parser } = require('json2csv');
 const Database = require('./utils/Database');
-const { debug, info } = require('./utils/log');
+const { error, debug, info, newLine } = require('./utils/log');
 const rdmString = require('./utils/rdmString');
 const { generateAuthToken } = require('./utils/authTokens');
 const { generateGuestHash } = require('./utils/guestHash');
@@ -24,7 +24,7 @@ Object.entries(process.env).forEach(([key, value]) => {
   if (value && !key.match(/^(npm_|PATH)/ig))
     debug(`${key}: ${value}`);
 });
-console.log(); //Empty new line
+newLine();
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -70,10 +70,7 @@ wss.on('disconnect', (ws, req) => {
   debug(`${ws.id}: WSS Disconnected`);
 });
 wss.on('error', (ws, req) => {
-  debug(`${ws.id}: WSS Connection errored`);
-});
-wss.on('listening', (ws, req) => {
-  debug(`WSS Listening on port ${port}`);
+  error(`${ws.id}: WSS Connection errored`);
 });
 wss.on('open', (ws, req) => {
   debug(`${ws.id}: WSS Connection opened`);
@@ -83,6 +80,9 @@ wss.on('close', (ws, req) => {
 });
 wss.on('upgrade', (ws, req) => {
   debug(`${ws.id}: WSS Connection upgraded`);
+});
+wss.on('listening', (ws, req) => {
+  info(`WSS Listening on port ${port}`);
 });
 
 app.ws('/ws-api/collectGuests', function (ws, req) {
@@ -233,7 +233,6 @@ app.post('/api/registerUser', async function (req, res) {
 
 app.post('/api/checkinGuest', (req, res) => {
   const guestHash = req.body.guestHash;
-  debug(`GuestHash: ${guestHash}`);
   const currentGuestObj = db.getGuest(guestHash);
   if (!currentGuestObj) {
     res.json({
