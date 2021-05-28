@@ -78,8 +78,8 @@ class Database {
             dbStore['events'][row.id] = {
               id: row.id,
               name: row.name,
-              owner_user_id: row.owner_user_id,
-              custom_logo_url: row.custom_logo_url
+              ownerUserID: row.ownerUserID,
+              customLogoURL: row.customLogoURL
             };
           });
         }
