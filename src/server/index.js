@@ -17,8 +17,8 @@ const { generateGuestHash } = require('./utils/guestHash');
 
 const db = new Database();
 
-const AUTH_EXPIRATION_HOURS = process.env.AUTH_EXPIRATION_HOURS || 24;
-const EXTERNAL_USER_ID_OFFSET = process.env.EXTERNAL_USER_ID_OFFSET || 1000;
+const AUTH_EXPIRATION_HOURS = Number(process.env.AUTH_EXPIRATION_HOURS) || 24;
+const EXTERNAL_USER_ID_OFFSET = Number(process.env.EXTERNAL_USER_ID_OFFSET) || 1000;
 
 Object.entries(process.env).forEach(([key, value]) => {
   if (value && !key.match(/^(npm_|PATH)/ig))
@@ -116,9 +116,25 @@ app.ws('/ws-api/collectGuest/:ticketID', function (ws, req) {
   });
 });
 
-app.get('/api/collectGuests', (req, res) => {
-  const guestlist = db.getAllGuests();
-  res.json(guestlist);
+app.post('/api/collectGuests', (req, res) => {
+  const validAuthToken = db.validateAuthToken(
+    req.body.auth.token,
+    req.body.auth.expiration,
+    (req.body.auth.userID - EXTERNAL_USER_ID_OFFSET)
+  );
+  const guestlist = db.getAllGuests(req.body.eventID, req.body.auth.userID);
+
+  if (validAuthToken) {
+    res.json({
+      success: true,
+      guests: guestlist
+    });
+  } else {
+    res.json({
+      success: false,
+      reason: 'INVALID_AUTH_TOKEN'
+  });
+  }
 });
 
 app.get('/api/collectGuest/:ticketID', (req, res) => {

@@ -105,18 +105,21 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const isAuthenticated =
-      this.state.isAuthenticated || this.getAuth().isAuthenticated;
+    const isAuthenticated = this.state.isAuthenticated || this.getAuth().isAuthenticated,
+      expiration = this.state.authExpiration || this.getAuth().authExpiration,
+      token = this.state.authToken || this.getAuth().authToken,
+      userID = this.state.authUserID || this.getAuth().authUserID;
+
     return (
       <PageContext.Provider value={{
-        isAuthenticated: this.state.isAuthenticated,
+        isAuthenticated: isAuthenticated,
         host: {
           address: `${endpoint}${port && `:${port}`}`
         },
         auth: {
-          expiration: this.state.authExpiration,
-          token: this.state.authToken,
-          userID: this.state.authUserID
+          expiration: expiration,
+          token: token,
+          userID: userID
         }
       }}>
         <div className={st.app}>

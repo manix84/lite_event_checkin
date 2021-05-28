@@ -7,6 +7,7 @@ const { error, debug } = require('./log');
 const rdmString = require('./rdmString');
 const { generatePasswordHash } = require('./passwordHash');
 const { generateScannerHash } = require('./scannerHash');
+const { validateAuthToken } = require('./authTokens');
 
 const dbStore = {};
 
@@ -124,6 +125,24 @@ class Database {
       authenticated,
       data
     }
+  }
+
+  validateAuthToken(authToken, expiration, userID) {
+    debug(JSON.stringify(Object.keys(dbStore['users'])), userID);
+    if (userID in dbStore['users']) {
+      debug(`${userID} found in store.`);
+      const userData = dbStore['users'][userID];
+      const isValidated = validateAuthToken(
+        authToken,
+        userID,
+        userData.salt,
+        expiration
+      );
+      if (isValidated) {
+        return true;
+      }
+    }
+    return false;
   }
 
   registerUser(username, password, displayName, callback) {
