@@ -28,13 +28,12 @@ class Loading extends React.Component<LoadingProps, LoadingState> {
     "Spinning violently around the y-axis...",
     "Tokenizing real life...",
     "Bending the spoon...",
-    "Filtering morale...",
-    "Upgrading Windows, your PC will restart several times.\nSit back and relax."
+    "Filtering morale..."
   ];
 
-  startLoadingInterval: ReturnType<typeof setTimeout> | undefined;
-  stillLoadingInterval: ReturnType<typeof setInterval> | undefined;
-  stopLoadingInterval: ReturnType<typeof setTimeout> | undefined;
+  startLoadingInterval?: ReturnType<typeof setTimeout>;
+  stillLoadingInterval?: ReturnType<typeof setInterval>;
+  stopLoadingInterval?: ReturnType<typeof setTimeout>;
 
   generateWittyMessage = () => {
     this.setState({
@@ -74,6 +73,8 @@ class Loading extends React.Component<LoadingProps, LoadingState> {
       clearInterval(this.stillLoadingInterval);
     if (this.stopLoadingInterval)
       clearTimeout(this.stopLoadingInterval);
+    if (this.startLoadingInterval)
+      clearTimeout(this.startLoadingInterval);
   }
 
   render() {

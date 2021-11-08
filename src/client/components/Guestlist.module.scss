@@ -1,43 +1,61 @@
+@import '../styles/colours.module.scss';
+
+$row_1_color: #F1F1F1;
+$row_2_color: #FCFCFC;
+
 .guestlist {
-  overflow: scroll;
-  font-size: 22px;
+  overflow-x: auto;
+  overflow-y: visible;
+  font-size: 1.2em;
+
+  .noGuestsTitle {
+    text-align: center;
+  }
 
   table {
     width: 100%;
     table-layout: auto;
+    border-collapse: collapse;
 
     td,
     th {
       text-align: start;
     }
 
+    thead tr {
+      border-bottom: 1px solid $section_title_border_color;
+    }
+
     tbody {
       tr:nth-child(even) {
-        background: #DDD
+        background-color: $row_1_color;
       }
 
       tr:nth-child(odd) {
-        background: #EEE
+        background-color: $row_2_color;
+      }
+
+      tr.checkedIn {
+        opacity: 0.5;
       }
     }
 
 
     img {
-      height: 1em;
+      height: 0.8em;
       opacity: 1;
+
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
+    a,
     a:link,
     a:active,
     a:visited {
       text-decoration: none;
-      color: rgba(0, 0, 0, 1)
-    }
-
-    .checkedIn {
-      color: rgba(0, 0, 0, 0.3);
+      color: $page_font_color;
     }
   }
-
-  @import '../utils/loader.module.scss';
 }

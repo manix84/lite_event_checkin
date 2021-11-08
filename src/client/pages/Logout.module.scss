@@ -1,0 +1,11 @@
+@import '../styles/page.module.scss';
+
+.logoutPage {
+  .container {
+    .title {
+      @include pageTitle;
+    }
+
+    @include pageSection;
+  }
+}

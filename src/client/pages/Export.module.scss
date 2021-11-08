@@ -1,0 +1,21 @@
+@import '../styles/page.module.scss';
+@import '../styles/colours.module.scss';
+
+.exportPage {
+  .container {
+    @include pageSection;
+
+    .title {
+      @include pageTitle;
+    }
+
+    ul {
+      padding: 0;
+      margin-bottom: 0;
+
+      li {
+        display: block;
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
+@import '../styles/page.module.scss';
+
 .aboutPage {
-  padding: 16px;
-  background-color: #FFF;
+  @include pageSection;
 
   .logo {
     width: 50%;

@@ -7,4 +7,5 @@ export interface GuestProps {
   lastName: string;
   salt: string;
   checkedIn: boolean;
+  checkinTime?: number;
 }

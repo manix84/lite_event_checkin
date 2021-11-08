@@ -25,3 +25,5 @@ A simple QR Code check-in system.
   - [x] Move from context to websockets to update guest data.
 - [x] Implement About Page, so it looks a little more professional.
 - [x] Add some styling so it doesn't look like a developer through this together in a week.
+- [ ] Add checkin time stamp support.
+- [x] Migrate from JSON DB to MySQL.

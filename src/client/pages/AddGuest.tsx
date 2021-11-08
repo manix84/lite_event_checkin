@@ -1,4 +1,6 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
+import PageContext from '../context/Page';
 import st from './AddGuest.module.scss';
 
 class AddGuestPage extends React.Component {
@@ -11,7 +13,7 @@ class AddGuestPage extends React.Component {
     };
     const firstName = target.firstName.value; // typechecks!
     const lastName = target.lastName.value; // typechecks!
-    const response = await fetch('/api/addGuest', {
+    const response = await fetch(`https://${this.context.host.address}/api/addGuest`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,22 +30,29 @@ class AddGuestPage extends React.Component {
 
   render() {
     return (
-      <div className={st.addGuestPage}>
-        <h2>Add Guest</h2>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            First Name:
+      <>
+        <Helmet>
+          <title>Checkin Lite | Add Guests</title>
+        </Helmet>
+        <div className={st.addGuestPage}>
+          <h2>Add Guest</h2>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              First Name:
             <input name={'firstName'} placeholder={'First Name'} />
-          </label>
-          <label>
-            Last Name:
+            </label>
+            <label>
+              Last Name:
             <input name={'lastName'} placeholder={'Last Name'} />
-          </label>
-          <input type={'submit'} value={'Add Guest'} className={st.submitButton} />
-        </form>
-      </div>
+            </label>
+            <input type={'submit'} value={'Add Guest'} className={st.submitButton} />
+          </form>
+        </div>
+      </>
     );
   }
 }
+
+AddGuestPage.contextType = PageContext;
 
 export default AddGuestPage;

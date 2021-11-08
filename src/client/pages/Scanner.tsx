@@ -1,4 +1,6 @@
 import React from "react";
+import { Helmet } from 'react-helmet';
+import PageContext from '../context/Page';
 import Guestlist from "../components/Guestlist";
 import QrReader from "react-qr-reader";
 import st from "./Scanner.module.scss";
@@ -8,11 +10,6 @@ import { GuestlistProps } from '../types';
 import successSound from "../content/success.mp3";
 import failureSound from "../content/failure.mp3";
 import Loading from '../components/Loading';
-
-const PAUSE_TIMER: number = 2000;
-const DEFAULT_RESULT: string = '[scanning]';
-
-const HOST_ADDRESS = `${process.env.REACT_APP_API_ENDPOINT || 'localhost'}:${process.env.PORT || 5000}`;
 
 type ReasonKeys = "GUEST_NOT_FOUND" | "GUEST_ALREADY_CHECKEDIN" | "UNKNOWN_QR_CODE";
 interface CheckinResponse {
@@ -34,6 +31,10 @@ interface ScannerPageState {
   guests: GuestlistProps;
   loadingGuests: boolean;
 }
+
+const PAUSE_TIMER: number = 2000;
+const DEFAULT_RESULT: string = '[scanning]';
+
 class ScannerPage extends React.Component<{}, ScannerPageState> {
   state = {
     result: DEFAULT_RESULT,
@@ -48,11 +49,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   successAudio: HTMLAudioElement = new Audio(successSound);
   failureAudio: HTMLAudioElement = new Audio(failureSound);
 
-  guestsWS = new WebSocket(`wss://${HOST_ADDRESS}/ws-api/collectGuests`);
+  guestsWS = new WebSocket(`wss://${this.context.host.address}/ws-api/collectGuests`);
 
   collectGuestData = async () => {
     const response = await fetch(
-      `https://${HOST_ADDRESS}/api/collectGuests`
+      `https://${this.context.host.address}/api/collectGuests`
     );
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
@@ -63,6 +64,11 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
   componentDidMount() {
     this.successAudio.volume = 0.2;
     this.failureAudio.volume = 0.2;
+
+    // Preloading icons.
+    new Image().src = `${process.env.PUBLIC_URL}/checkMark.svg`;
+    new Image().src = `${process.env.PUBLIC_URL}/crossMark.svg`;
+    new Image().src = `${process.env.PUBLIC_URL}/questionMark.svg`;
 
     this.collectGuestData()
       .then(res => {
@@ -106,7 +112,7 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
       if (match) {
         this.pauseScan = true;
         (async () => {
-          const response = await fetch('/api/checkinGuest', {
+          const response = await fetch(`https://${this.context.host.address}/api/checkinGuest`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -195,34 +201,41 @@ class ScannerPage extends React.Component<{}, ScannerPageState> {
     }
 
     return (
-      <div className={st.scannerPage}>
-        <div className={scannerClassName}>
-          <div className={st.overlay}></div>
-          <div className={st.inlay}>
-            <div className={cn(st.b, st.b1)} />
-            <div className={cn(st.b, st.b2)} />
-            <div className={cn(st.b, st.b3)} />
-            <div className={cn(st.b, st.b4)} />
-            <img src={inlayIcon} alt={''} className={st.inlayIcon} />
+      <>
+        <Helmet>
+          <title>Checkin Lite | Scanner</title>
+        </Helmet>
+        <div className={st.scannerPage}>
+          <div className={scannerClassName}>
+            <div className={st.overlay}></div>
+            <div className={st.inlay}>
+              <div className={cn(st.b, st.b1)} />
+              <div className={cn(st.b, st.b2)} />
+              <div className={cn(st.b, st.b3)} />
+              <div className={cn(st.b, st.b4)} />
+              <img src={inlayIcon} alt={''} className={st.inlayIcon} />
+            </div>
+            <QrReader
+              delay={500}
+              onError={this.handleError}
+              onScan={this.handleScan}
+              showViewFinder={false}
+            />
           </div>
-          <QrReader
-            delay={500}
-            onError={this.handleError}
-            onScan={this.handleScan}
-            showViewFinder={false}
-          />
+          <div className={st.results}>
+            <div>{this.state.result}</div>
+          </div>
+          <div className={st.guestlist}>
+            {(this.state.loadingGuests) ? <Loading /> :
+              <Guestlist guests={this.state.guests} />
+            }
+          </div>
         </div>
-        <div className={st.results}>
-          <div>{this.state.result}</div>
-        </div>
-        <div className={st.guestlist}>
-          {(this.state.loadingGuests) ? <Loading /> :
-            <Guestlist guests={this.state.guests} />
-          }
-        </div>
-      </div>
+      </>
     );
   }
 }
+
+ScannerPage.contextType = PageContext;
 
 export default ScannerPage;

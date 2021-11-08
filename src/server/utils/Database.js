@@ -1,100 +1,214 @@
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+require('dotenv-flow').config({
+  silent: true
+});
 
-const DEBUG = process.env.DEBUG || false;
-
-const
-  debug = (msg) => {
-    if (DEBUG) console.log(chalk.green(msg));
-  },
-  error = (msg) => {
-    console.log(chalk.red(msg));
-  };
-
+const mysql = require('mysql');
+const { error, debug } = require('./log');
+const rdmString = require('./rdmString');
+const { generatePasswordHash } = require('./passwordHash');
+const { generateScannerHash } = require('./scannerHash');
+const { validateAuthToken } = require('./authTokens');
 
 const dbStore = {};
 
 class Database {
+  async _runQuery(query, callback = () => { }) {
+    const connection = await mysql.createConnection(
+      process.env.CLEARDB_DATABASE_URL
+    );
+    connection.connect();
+
+    await connection.query({
+      sql: query,
+      timeout: 4000, // 4s
+    }, (err, results) => {
+      if (err)
+        error('err', err);
+
+      callback(results, err)
+    })
+    connection.end();
+  }
+  _collectGuests() {
+    if (!('guests' in dbStore)) {
+      dbStore['guests'] = dbStore['guests'] || {};
+      this._runQuery(
+        `SELECT * FROM guests`,
+        (rows) => {
+          rows.forEach((row) => {
+            dbStore['guests'][row.guestHash] = {
+              lastName: row.lastName,
+              firstName: row.firstName,
+              salt: row.salt,
+              checkedIn: Boolean(row.checkedIn),
+              checkinTime: Number(row.checkinTime),
+              eventID: row.eventID
+            };
+          });
+        }
+      );
+    }
+  }
+  _collectUsers() {
+    if (!('users' in dbStore)) {
+      dbStore['users'] = dbStore['users'] || {};
+      this._runQuery(
+        `SELECT * FROM users`,
+        (rows) => {
+          rows.forEach((row) => {
+            dbStore['users'][row.id] = {
+              id: row.id,
+              displayName: row.displayName,
+              username: row.username,
+              password: row.passwordHash,
+              salt: row.salt,
+              scannerHash: row.scannerHash,
+            };
+          });
+        }
+      );
+    }
+  }
+  _collectEvents() {
+    if (!('events' in dbStore)) {
+      dbStore['events'] = dbStore['events'] || {};
+      this._runQuery(
+        `SELECT * FROM events`,
+        (rows) => {
+          rows.forEach((row) => {
+            dbStore['events'][row.id] = {
+              id: row.id,
+              name: row.name,
+              ownerUserID: row.ownerUserID,
+              customLogoURL: row.customLogoURL
+            };
+          });
+        }
+      );
+    }
+  }
+
   constructor(
-    dbID,
-    root = __dirname,
     options
   ) {
-    const dbID_normalized = path.normalize(path.join(root, dbID));
-    this.dbID = dbID_normalized;
     this.options = Object.assign({
       writeOnSet: true,
       refreshSeconds: 20
     }, options);
+    this._collectGuests();
+    this._collectUsers();
+    this._collectEvents();
+  }
 
-    if (this._checkExistence()) {
-      this._connect(this.dbID);
-      debug(`${chalk.bold(this.dbID)} found.`);
-    } else {
-      error(`Can't find ${chalk.bold(this.dbID)}`);
+  authenticateUser(username, password) {
+    let found = false;
+    let authenticated = false;
+    let data = {};
+    Object.entries(dbStore['users']).forEach(([_id, row]) => {
+      if (row.username.toLowerCase() === username.toLowerCase()) {
+        const passwordHash = generatePasswordHash(password, row.salt);
+        found = true;
+        if (row.password === passwordHash) {
+          authenticated = true;
+          data = {
+            id: row.id,
+            displayName: row.displayName,
+            username: row.username,
+            salt: row.salt,
+            scannerHash: row.scannerHash,
+          };
+        }
+      }
+    })
+    return {
+      found,
+      authenticated,
+      data
     }
   }
 
-  _connect(dbID) {
-    if (!(dbID in dbStore)) {
-      dbStore[dbID] = this._read();
-    }
-  }
-
-  _sync(force = false) {
-    debug(`${this.lastSynced + (this.options.refreshSeconds * 1000)} < ${Date.now()}`);
-    if (
-      ((this.lastSynced + (this.options.refreshSeconds * 1000)) < Date.now()) ||
-      force
-    ) {
-      dbStore[this.dbID] = this._read();
-      debug(`Updating Database: ${this.dbID}`);
-    }
-    return true;
-  }
-
-  _checkExistence() {
-    return fs.existsSync(this.dbID);
-  }
-
-  _read() {
-    const output = {};
-    try {
-      const data = fs.readFileSync(this.dbID, 'utf8');
-      Object.assign(output, JSON.parse(data));
-      this.lastSynced = Date.now();
-    } catch (err) {
-      error(err);
-    }
-    return output;
-  }
-
-  _write() {
-    fs.writeFileSync(
-      this.dbID,
-      JSON.stringify(dbStore[this.dbID], null, 2)
-    );
-  }
-
-  get(key) {
-    this._sync();
-    if (key in dbStore[this.dbID]) {
-      return dbStore[this.dbID][key];
+  validateAuthToken(authToken, expiration, userID) {
+    debug(JSON.stringify(Object.keys(dbStore['users'])), userID);
+    if (userID in dbStore['users']) {
+      debug(`${userID} found in store.`);
+      const userData = dbStore['users'][userID];
+      const isValidated = validateAuthToken(
+        authToken,
+        userID,
+        userData.salt,
+        expiration
+      );
+      if (isValidated) {
+        return true;
+      }
     }
     return false;
   }
 
-  set(key, data) {
-    dbStore[this.dbID][key] = data;
+  registerUser(username, password, displayName, callback) {
+    const salt = rdmString();
+    const scannerHash = generateScannerHash(salt);
+    const passwordHash = generatePasswordHash(password, salt);
+
+    let userID;
+
+    this._runQuery(
+      `INSERT INTO users (username, passwordHash, displayName, salt, scannerHash) VALUES (${mysql.escape(username)}, ${mysql.escape(passwordHash)}, ${mysql.escape(displayName)}, ${mysql.escape(salt)}, ${mysql.escape(scannerHash)});`,
+      (results, err) => {
+        userID = results && results.insertId;
+
+        if (Boolean(userID) && !isNaN(userID)) {
+          dbStore['users'][userID] = {
+            id: userID,
+            displayName: displayName,
+            username: username,
+            password: passwordHash,
+            salt: salt,
+            scannerHash: scannerHash
+          };
+          callback({
+            success: Boolean(userID),
+            id: userID,
+            displayName: displayName,
+            username: username,
+            salt: salt,
+            scannerHash: scannerHash
+          });
+        } else {
+          callback({
+            success: false,
+            reason: err.code,
+            reasonText: err.sqlMessage
+          });
+        }
+      }
+    );
+  }
+
+  getGuest(guestHash) {
+    // debug('get', dbStore, guestHash);
+    if (guestHash in dbStore['guests']) {
+      return dbStore['guests'][guestHash];
+    }
+    return false;
+  }
+
+  addGuest(guestData) {
+
+  }
+
+  updateGuest(key, guestData) {
+    dbStore['guests'][key] = guestData;
     if (this.options.writeOnSet) {
-      this._write();
+      this._runQuery(
+        `REPLACE INTO guests (guestHash, lastName, firstName, salt, checkedIn, checkinTime) VALUES (${mysql.escape(key)}, ${mysql.escape(guestData.lastName)}, ${mysql.escape(guestData.firstName)}, ${mysql.escape(guestData.salt)}, ${mysql.escape(guestData.checkedIn)}, ${mysql.escape(guestData.checkinTime)});`
+      );
     }
   }
 
-  getAll() {
-    this._sync();
-    return dbStore[this.dbID];
+  getAllGuests() {
+    // debug('getAll', dbStore);
+    return dbStore['guests'];
   }
 }
 

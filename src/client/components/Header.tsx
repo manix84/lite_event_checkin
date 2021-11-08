@@ -10,11 +10,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
   render() {
     return (
-      <div className={st.header}>
+      <header className={st.header}>
         <a href={'/about'}>
           <img className={st.logo} src={`${process.env.PUBLIC_URL}/logo.svg`} alt={'Checkin Lite'} />
         </a>
-      </div>
+      </header>
     );
   }
 }

@@ -11,19 +11,33 @@ interface GuestlistCompState {
   guests: GuestlistProps;
 }
 
-const sortBy = (key: (keyof GuestProps), invert: boolean = false) => {
-  return (a: [guestHash: string, guest: GuestProps], b: [guestHash: string, guest: GuestProps]) => {
-    if (a[1][key] < b[1][key]) {
+const sortBy = (key: (keyof GuestProps)) => {
+  type sortByProps = [
+    guestHash: string,
+    guest: GuestProps
+  ];
+  return (
+    a: sortByProps,
+    b: sortByProps
+  ) => {
+    if (a[1][key]! < b[1][key]!) {
       return -1;
-    } else if (a[1][key] > b[1][key]) {
+    } else if (a[1][key]! > b[1][key]!) {
       return 1;
-    };
+    }
     return 0;
   };
 };
 
 class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> {
   render() {
+    if (Object.keys(this.props.guests).length <= 0) {
+      return (
+        <div className={st.guestlist}>
+          <h2 className={st.noGuestsTitle}>No Guests Found</h2>
+        </div>
+      );
+    }
     return (
       <div className={st.guestlist}>
         <table>
@@ -31,7 +45,7 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> 
             <col />
             <col />
           </colgroup>
-          <thead>
+          {/* <thead>
             <tr>
               <th></th>
               <th>Name</th>
@@ -44,9 +58,9 @@ class Guestlist extends React.Component<GuestlistCompProps, GuestlistCompState> 
                 <th>Name</th>
               </tr>
             </tfoot>
-          }
+          } */}
           <tbody>
-            {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('lastName')).map(([guestHash, guest]) => (
+            {Object.entries(this.props.guests as GuestlistProps).sort(sortBy('firstName')).sort(sortBy('lastName')).map(([guestHash, guest]) => (
               <tr key={guestHash} className={guest.checkedIn ? st.checkedIn : ''}>
                 <td>
                   <img className={st.statusIcon} src={guest.checkedIn ? `${process.env.PUBLIC_URL}/checkMark.svg` : `${process.env.PUBLIC_URL}/crossMark.svg`} alt={guest.checkedIn ? 'Checked In!' : 'Not Checked In Yet'} />

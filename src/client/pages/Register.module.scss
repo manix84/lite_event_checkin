@@ -1,0 +1,16 @@
+@import '../styles/page.module.scss';
+
+.registerPage {
+  .container {
+    .title {
+      @include pageTitle;
+    }
+
+    @include pageSection;
+
+    .loginLink {
+      text-align: end;
+      margin-bottom: 16px;
+    }
+  }
+}

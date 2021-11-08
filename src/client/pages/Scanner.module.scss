@@ -1,6 +1,8 @@
+@import '../styles/page.module.scss';
+
 .scannerPage {
   .scanner {
-    background-color: #FFF;
+    @include pageSection;
     padding: 16px;
     position: relative;
     width: auto;
@@ -16,7 +18,6 @@
       bottom: 0;
       right: 0;
       margin: 15px;
-      // background-color: rgba(#000, 0.1);
       backdrop-filter: grayscale(0.75) blur(10px);
       background-blend-mode: multiply;
 
@@ -33,7 +34,6 @@
       bottom: 0;
       right: 0;
       margin: calc(12px + 10%);
-      // outline: 4px dashed rgba(255, 255, 255, 0.75);
       z-index: 3;
 
 
@@ -70,7 +70,7 @@
         width: 33%;
         position: absolute;
         z-index: 4;
-        border-color: rgba(255, 255, 255, 0.75);
+        border-color: $scanner_scanning_color;
       }
 
       .inlayIcon {
@@ -81,10 +81,8 @@
 
     &.valid {
       .inlay {
-        outline-color: rgba(0, 255, 0, 0.75);
-
         .b {
-          border-color: rgba(0, 255, 0, 0.75);
+          border-color: $scanner_valid_color;
         }
 
         .inlayIcon {
@@ -95,10 +93,9 @@
 
     &.invalid {
       .inlay {
-        outline-color: rgba(255, 0, 0, 0.75);
 
         .b {
-          border-color: rgba(255, 0, 0, 0.75);
+          border-color: $scanner_invalid_color;
         }
 
         .inlayIcon {
@@ -109,10 +106,9 @@
 
     &.unknown {
       .inlay {
-        outline-color: rgba(0, 150, 255, 0.75);
 
         .b {
-          border-color: rgba(0, 150, 255, 0.75);
+          border-color: $scanner_unknown_color;
         }
 
         .inlayIcon {
@@ -123,7 +119,7 @@
   }
 
   .results {
-    background-color: #FFF;
+    background-color: $section_background_color;
     margin-top: 8px;
     padding: 16px;
     line-height: 1.2em;
@@ -134,7 +130,7 @@
   }
 
   .guestlist {
-    background-color: #FFF;
+    background-color: $section_background_color;
     margin-top: 8px;
     padding: 16px;
   }
